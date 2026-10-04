@@ -1,0 +1,14 @@
+/* src/pages/Home.css */
+.hero-banner {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+.category-pill {
+  transition: all 0.2s ease-in-out;
+}
+
+.category-pill:hover {
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}
