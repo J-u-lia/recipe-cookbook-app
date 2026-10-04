@@ -1,0 +1,24 @@
+/* Baking Page Custom Styles */
+.baking-hero {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.baking-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+}
+
+.baking-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15) !important;
+}
+
+.baking-card-img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.converter-box {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}

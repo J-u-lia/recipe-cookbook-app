@@ -80,7 +80,7 @@ function Cooking() {
     // takes recipe object from TheMealDB and turns its ingredients into arrays
     const getIngredientsList = (meal) => {
         const list = [];    // first empty list
-        // iterates over every ingredient from 1 to 20
+        // iterates over every ingredient from 1 to 20 because TheMEalDB provides upt to 20 ingredient fields
         for (let i = 1; i <= 20; i++) {
             // this makes dynamic property names, so isntead of writing meal.strIngredient1, meal.strIngredient2, ect. it takes the i (so the number) and puts it behind strIngredient
             const ingredient = meal[`strIngredient${i}`];
@@ -97,6 +97,7 @@ function Cooking() {
     };
 
     // when user clicks on ingredient this function runs - index says which ingredient
+        // need to do this because with react genereally create a new state object instead of modifying the existing one directly
     const toggleIngredientCheck = (index) => {
         // the prev gives the prevous state because i want to keep the existing checked ingredients while changing only one
         setCheckedIngredients((prev) => ({
