@@ -66,7 +66,8 @@ function Home() {
                     <form onSubmit={handleSearchSubmit} className="col-md-8 col-lg-6 mx-auto mb-3">
                         {/* input group of bootstrap, visually combine the search icon, input field and search button */}
                         <div className="input-group input-group-lg shadow-sm">
-                            {/* container for search icon from lucide react in size 22*/}
+                            {/* container for search icon from lucide react in size 22
+                            span is a tag that is inline so doesn't force line break like <div> */}
                             <span className="input-group-text bg-white border-0 text-muted ps-3">
                                 <Search size={22} />
                             </span>
