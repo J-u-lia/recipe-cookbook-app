@@ -1,7 +1,8 @@
 // helper function that handles the recipe of the day card on the home screen
 // IMPORTS
 import { useState, useEffect } from 'react';   {/* import useState hook from Reakt - allows component to remember information that can change (e.g what has user typed into search box) */}
-import { Sparkles, Clock, Globe, Users, Minus, Plus, CheckSquare, Square } from 'lucide-react'; // icons
+import { Sparkles, Clock, Globe, Users, Minus, Plus, CheckSquare, Square, Heart } from 'lucide-react'; // icons
+import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
 
 // creates the component which is then imported in Home.jsx
 function RecipeOfTheDay() {
@@ -11,6 +12,7 @@ function RecipeOfTheDay() {
     const [showModal, setShowModal] = useState(false);    // Controls whether the full recipe modal is open
     const [servings, setServings] = useState(4);    // Stores the number of servings selected by the user
     const [checkedIngredients, setCheckedIngredients] = useState({});    // Stores which ingredients have been checked
+    const [, setSavedState] = useState(false);  // Forces the component to update when a recipe is saved/unsaved
 
     // Get the recipe when the component first loads
     useEffect(() => {
@@ -84,6 +86,15 @@ function RecipeOfTheDay() {
         }
 
         return list;
+    };
+
+    // Toggle save handler that updates both localStorage and local UI state
+    const handleToggleSave = () => {
+        if (!recipeOfDay) return;
+        
+        toggleSaveRecipe(recipeOfDay);
+
+        setSavedState((prev) => !prev); // Trigger immediate re-render
     };
 
     return (
@@ -256,10 +267,35 @@ function RecipeOfTheDay() {
                                 alt={recipeOfDay.strMeal}
                                 className="img-fluid rounded mb-4 w-100"
                                 style={{
-                                    maxHeight: '400px',
+                                    maxHeight: '1000px',
                                     objectFit: 'cover',
                                 }}
                             />
+
+                            {/* Save button - beneath picture, right aligned */}
+                            <div className="d-flex justify-content-end mb-4">
+                                <button
+                                    onClick={handleToggleSave}
+                                    className={`btn btn-sm ${
+                                        isRecipeSaved(recipeOfDay.idMeal)
+                                            ? 'btn-danger'
+                                            : 'btn-outline-danger'
+                                    } rounded-pill d-flex align-items-center gap-1 px-3`}
+                                >
+                                    <Heart
+                                        size={16}
+                                        fill={
+                                            isRecipeSaved(recipeOfDay.idMeal)
+                                                ? 'currentColor'
+                                                : 'none'
+                                        }
+                                    />
+                                        
+                                        {isRecipeSaved(recipeOfDay.idMeal)
+                                            ? 'Saved'
+                                            : 'Save'}
+                                </button>
+                            </div>
 
                             {/* Category and origin */}
                             <div className="d-flex flex-wrap gap-2 mb-4">

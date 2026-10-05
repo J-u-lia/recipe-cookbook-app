@@ -224,8 +224,7 @@ function Cooking() {
                                         onClick={() => fetchRecipeDetails(meal.idMeal)}
                                         className="btn btn-outline-dark btn-sm fw-semibold w-100 rounded-3 mt-3"
                                     >
-                                        View Recipe & Scaler
-                                    </button>
+                                        View Recipe                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -268,8 +267,8 @@ function Cooking() {
                                     alt={selectedRecipe.strMeal}
                                     className="img-fluid rounded mb-3 w-100"
                                     style={{
-                                        maxHeight: '500px',
-                                        objectFit: 'contain',
+                                        maxHeight: '1000px',
+                                        objectFit: 'cover',
                                     }}
                                 />
 

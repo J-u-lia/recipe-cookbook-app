@@ -229,18 +229,9 @@ function MyCookbook() {
                         <div className="modal-content rounded-4 border-0 shadow">
                             <div className="modal-header border-0 bg-light p-4 d-flex justify-content-between align-items-start">
                                 <div>
-                                    <span className="badge bg-primary text-white fw-bold mb-2">
-                                        {selectedRecipe.strCategory || 'Cookbook'}
-                                    </span>
                                     <h3 className="modal-title fw-bold">{selectedRecipe.strMeal}</h3>
                                 </div>
                                 <div className="d-flex align-items-center gap-2">
-                                    <button
-                                        onClick={() => removeRecipe(selectedRecipe.idMeal)}
-                                        className="btn btn-outline-danger btn-sm rounded-pill px-3 d-flex align-items-center gap-1"
-                                    >
-                                        <Trash2 size={16} /> Remove
-                                    </button>
                                     <button
                                         type="button"
                                         className="btn-close"
@@ -380,7 +371,15 @@ function MyCookbook() {
                             </div>
                             
                             {/* close button to make modal disappear */}
-                            <div className="modal-footer border-0 bg-light p-3">
+                            <div className="modal-footer border-0 bg-light p-3 d-flex justify-content-between">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-danger px-4 fw-semibold rounded-3 d-flex align-items-center gap-2"
+                                    onClick={() => removeRecipe(selectedRecipe.idMeal)}
+                                >
+                                    <Trash2 size={18} /> Remove
+                                </button>
+
                                 <button
                                     type="button"
                                     className="btn btn-secondary px-4 fw-semibold rounded-3"
