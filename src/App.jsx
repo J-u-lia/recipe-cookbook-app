@@ -8,6 +8,7 @@
   Link - used for navigation, creates sth that user can click and sth will happen when clicked */}
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { ChefHat } from 'lucide-react';
 {/* Page imports */}
 import Home from './pages/Home';
 import Cooking from './pages/Cooking';
@@ -30,7 +31,11 @@ function App() {
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div className="container">
           {/* clicking RecipeHub gets you to the Home screen */}
-          <Link className="navbar-brand fw-bold" to="/">RecipeHub</Link>
+          <Link className="navbar-brand fw-bold d-flex align-items-center gap-2" to="/">
+            Recipy
+            <ChefHat size={28} className="text-warning" />
+          </Link>
+          {/*<ChefHat size={48} className="mb-3 text-warning" />*/}
           <div className="navbar-nav">
             {/* these are the links in the navigation bar - link tells you where you will go */}
             <Link className="nav-link" to="/">Home</Link>

@@ -39,24 +39,23 @@ function Home() {
             <div className="hero-section text-center text-white mb-5 shadow-sm">
                 {/* padding on top and bottom */}
                 <div className="py-3">
-                    <div className="d-flex align-items-center gap-2 mb-3">
-                        <Sparkles className="text-warning" />
-                        
-                        <span className="text-uppercase fw-bold text-dark">
-                            Welcome to Recipe Finder
-                        </span>
+                    <div className="d-flex justify-content-center align-items-center gap-2 mb-3">
+                                            
+                        <h2 className="fw-bold mb-0 text-dark">
+                            Welcome to Recipy
+                        </h2>
+                        <ChefHat size={32} className="text-warning" />
+
                     </div>
                     
-                    {/* main heading in bootstrap typography class, bold and margin bottom */}
-                    <h1 className="display-4 fw-bold mb-3 text-dark">Find something delicious to cook today.</h1>
                     {/* a little text below with lead to make it more prominent, font size, margin at bottom and opacity (Deckkraft)*/}
-                    <p className="lead fs-5 mb-4 opacity-90 text-dark">
-                        Discover recipes, explore new flavours and find something delicious for every occasion.
+                    <p className="lead fs-5 mb-4 text-dark">
+                        Where your next favourite recipe is waiting.
+                        <br />
+                        <span className="fs-6 opacity-75">
+                            Discover recipes, explore new flavours, and find something delicious to make.
+                        </span>
                     </p>
-
-                    {/* displays the ChefHat icon from lucide-react in 48 pixels, margin at bottom */}
-                    <ChefHat size={48} className="mb-3 text-warning" />
-
 
                     {/* import the function for the search components so they will be renderd here */}
                     <SearchResults />
