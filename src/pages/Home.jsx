@@ -18,11 +18,12 @@ function Home() {
     const categories = [
         // the name is text shown to user
         // path is URL navigated to when clicking
-        { name: '#QuickBakes', path: '/baking?category=quick' },
-        { name: '#SavoryMeals', path: '/cooking?type=savory' },
-        { name: '#GlutenFree', path: '/cooking?tag=gluten-free' },
-        { name: '#Desserts', path: '/baking?type=sweet' },
-        { name: '#Pasta', path: '/cooking?query=pasta' },
+        { name: '#🧂 Savory', path: '/cooking' },
+        { name: '#🥐 Sweet', path: '/baking' },
+        { name: '#🥗 Vegetarian', path: '/cooking?category=vegetarian' },
+        { name: '#🌱 Vegan', path: '/cooking?category=vegan' },
+        { name: '#🍳 Breakfast', path: '/baking?category=Breakfast' },
+        { name: '#🥖 Sides', path: '/baking?category=Side' },
     ];
 
     // contains JSX that react will display

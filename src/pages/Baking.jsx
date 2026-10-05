@@ -5,6 +5,7 @@ import { Cake, Search, Cookie, Sparkles, Scale, CheckSquare, Square, Users, Minu
 import './Baking.css';  // style sheet
 // helper function for cookbook
 import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
+import { useSearchParams } from 'react-router-dom';
 
 // creating the React component Baking which can be displayed
 function Baking() {
@@ -14,6 +15,12 @@ function Baking() {
     const [categoryFilter, setCategoryFilter] = useState('Dessert');    //set the currently selected category to Dessert, if user then clicks Breakfast then it is breakfast, if this changes a different API request is casued
     const [selectedRecipe, setSelectedRecipe] = useState(null); // remembers which recipe the user has opend, at the beginning no recipe opend
     
+    const [searchParams] = useSearchParams();
+    const categoryParam = searchParams.get('category');
+    const tagParam = searchParams.get('tag');
+    const typeParam = searchParams.get('type');
+    const [, setSearchParams] = useSearchParams();
+
     // Baking Converter State (Cups to Grams / Oz to Grams) for different scalings used
     const [cupsValue, setCupsValue] = useState(1);  // stores number entered into converter, initially 1 if user changes this then calculation updates 
     const [checkedIngredients, setCheckedIngredients] = useState({});   // stores which ingredient has been checked, so first nothing has been checked so empty
@@ -68,8 +75,17 @@ function Baking() {
 
     // everytime the categoryFilter changes run this code - means everytime the user clicks on a new category the data from this categroy has to be fetched
     useEffect(() => {
+        const query = categoryParam || tagParam || typeParam;
+        if (query) {
+            setCategoryFilter(query);
+        }
+    }, [categoryParam, tagParam, typeParam]);
+
+    useEffect(() => {   // fetch the recipes when category filter state canges
         fetchBakingRecipes(categoryFilter);
     }, [categoryFilter]);
+
+    
 
     // the ingredient lsit is gotten from one complete meal object from the API because TheMealDB doesn't give ingredients as simple array
     const getIngredientsList = (meal) => {

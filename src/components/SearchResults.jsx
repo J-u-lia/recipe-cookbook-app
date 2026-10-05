@@ -13,6 +13,9 @@ function SearchResults() {
     const [searched, setSearched] = useState(false);    // stores if the user has searched sth or not so that the rendering works correctly when coming to home page
     const [checkedIngredients, setCheckedIngredients] = useState({});   // stores if ingredients has been cheecked or not
 
+    
+
+
     // the ingredient lsit is gotten from one complete meal object from the API because TheMealDB doesn't give ingredients as simple array
     const getIngredientsList = (meal) => {
         const list = [];    // empty list first

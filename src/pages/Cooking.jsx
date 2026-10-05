@@ -9,6 +9,7 @@ import { Search, Flame, Clock, Users, Plus, Minus, CheckSquare, Square, Heart } 
 import './Cooking.css'; // import .css file for styling
 // helper function for cookbook
 import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
+import { useSearchParams } from 'react-router-dom';
 
 // component called Cooking
 function Cooking() {
@@ -19,6 +20,14 @@ function Cooking() {
     const [selectedRecipe, setSelectedRecipe] = useState(null); // stores recipe that user has clicked, at beginning no selected recipe
     const [servings, setServings] = useState(4);    // number of servings selected by user
     const [checkedIngredients, setCheckedIngredients] = useState({});   // stores which ingredient the user has checked
+
+    // variables that extract information directly from browser's URL query strin
+    // so when clicking on quicklinks on home they do route listening and then the user gets to the destination - this way the webpage can filter recipes before being even on the page
+    const [searchParams] = useSearchParams();
+    const categoryParam = searchParams.get('category'); // search for category e.g., 'vegetarian'
+    const tagParam = searchParams.get('tag');   // for tags
+    const typeParam = searchParams.get('type'); // for type
+    const [, setSearchParams] = useSearchParams();
 
     // State trigger to force immediate UI updates on heart toggle
     const [, setSavedState] = useState(false);
@@ -74,12 +83,22 @@ function Cooking() {
     // run the fetchRecipes(categoryFilter) when the component loads and always when the categoryFilter changes
     // e.g user first selects filter on Chicken and then it is fetchRecipes("Chicken") but then he changes to Pasta then the categoryFilter changes from Chicken to Pasta so the fetchRecipes() also changes from chicken to Patsa because it is dependend on categoryFilter
     useEffect(() => {
-        fetchRecipes(categoryFilter);
-    }, [categoryFilter]);
+        // checks for first existing parameter in the URL
+        const query = categoryParam || tagParam || typeParam;
+        if (query) {
+            // if it finds one it updates the state to the thing found
+            setCategoryFilter(query);
+            fetchRecipes(query);
+        } else {
+            fetchRecipes(categoryFilter);
+        }
+    }, [categoryParam, tagParam, typeParam]);   // this tells react when to re-run useEffect block because react monitores the values of tese 3 things and everytime the compoonent rerenders the react compares these three values to what they were before rendering and if any of those changed then the function has to be runned again
 
     // this gets a category (e.g. Beef) and updates the state setCategoryFilter("Beef") and because the categoryFilter changed the useEffect runs
     const handleCategoryChange = (cat) => {
         setCategoryFilter(cat);
+        setSearchParams({});
+        fetchRecipes(cat);
     };
 
     // takes recipe object from TheMealDB and turns its ingredients into arrays
