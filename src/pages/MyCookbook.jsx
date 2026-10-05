@@ -3,8 +3,8 @@
 // IMPORTS
 import { useState, useEffect } from 'react';    // react hooks to remember information that can change and that react can perform sth as a side effect
 import { Bookmark, Heart, Trash2, Eye, Users, Minus, Plus, CheckSquare, Square, PlusCircle } from 'lucide-react';   // icons
-import { toggleSaveRecipe, isRecipeSaved, saveCustomRecipe } from '../utils/cookbookHelper';  //helper functions
-
+import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';  //helper functions
+import AddRecipeModal from '../components/AddRecipeModal';
 
 // React Component
 function MyCookbook() {
@@ -128,54 +128,6 @@ function MyCookbook() {
     });
 
     const [showAddModal, setShowAddModal] = useState(false);    // controls if the create custom recipe is visible or not
-    // stores all informations currently entered into the custom recipe form
-    const [customRecipeForm, setCustomRecipeForm] = useState({
-        title: '',
-        category: 'Cooking',
-        area: '',
-        instructions: '',
-        image: '',
-        ingredients: [{ ingredient: '', measure: '' }]
-    });
-
-    // updates one specific ingredient in the custom resipe form
-    // index is which ingredient row was changed, field is either ingredient or measure, value is what the user typed
-    const handleIngredientChange = (index, field, value) => {
-        const updated = [...customRecipeForm.ingredients];  // first the current ingredients array is copied in a new array so React can see the change
-        updated[index][field] = value;  // updates the field of selected ingredient
-        setCustomRecipeForm({ ...customRecipeForm, ingredients: updated }); // saves the updated ingredients back into form state
-    };
-
-    // empty ingredient row is added to the form
-    const addIngredientRow = () => {
-        // existing form information is kept and added one new empty ingredient
-        setCustomRecipeForm({
-            ...customRecipeForm,
-            ingredients: [...customRecipeForm.ingredients, { ingredient: '', measure: '' }]
-        });
-    };
-
-    // runs everytime the user submits the Create Custom recipe form
-    const handleSaveCustomRecipe = (e) => {
-        e.preventDefault(); // don't reload the page when form submitted
-        if (!customRecipeForm.title.trim()) return; // dont save the recipe if user hasn't entered a title
-
-        // the form data needs to be sent to the helper function to onvert the data into JSON to store it
-        const saved = saveCustomRecipe(customRecipeForm);
-        if (saved) {
-            // if the saving was successfull:
-            loadCookbook(); // Reload state from localStorage
-            setShowAddModal(false); // Close form modal
-            setCustomRecipeForm({   // Reset form
-                title: '',
-                category: 'Cooking',
-                area: '',
-                instructions: '',
-                image: '',
-                ingredients: [{ ingredient: '', measure: '' }]
-            });
-        }
-    };
 
     return (
         <div className="my-cookbook-page pb-5">
@@ -464,151 +416,11 @@ function MyCookbook() {
             )}
 
             {/* ADD CUSTOM RECIPE MODAL */}
-            {showAddModal && (
-                <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
-                    <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
-                        <div className="modal-content rounded-4 border-0 shadow">
-                            <div className="modal-header border-0 bg-light p-4 justify-content-between">
-                                <h4 className="fw-bold mb-0">Create Custom Recipe</h4>
-                                <button className="btn-close" onClick={() => setShowAddModal(false)}></button>
-                            </div>
-                            
-                            <form onSubmit={handleSaveCustomRecipe}>
-                                <div className="modal-body p-4" style={{maxHeight: '65vh', overflowY: 'auto'}}>
-                                    <div className="mb-3">
-                                        <label className="form-label fw-bold">Recipe Title</label>
-                                        {/* if there is a input that goes to onChange, customRecipeForm, handleSaveCustomRecipe(), saveCustomRecipe() and then in the localStorage */}
-                                        <input 
-                                            type="text" 
-                                            className="form-control rounded-3" 
-                                            required 
-                                            value={customRecipeForm.title}
-                                            onChange={(e) => setCustomRecipeForm({ ...customRecipeForm, title: e.target.value })}
-                                            placeholder="e.g., Grandma's Apple Pie"
-                                        />
-                                    </div>
-
-                                    <div className="row g-3 mb-3">
-                                        <div className="col-md-4">
-                                            <label className="form-label fw-bold">Category</label>
-                                            <select 
-                                                className="form-select rounded-3"
-                                                value={customRecipeForm.category}
-                                                onChange={(e) => setCustomRecipeForm({ ...customRecipeForm, category: e.target.value })}
-                                            >
-                                                <option value="Cooking">Cooking</option>
-                                                <option value="Baking">Baking</option>
-                                                <option value="Dessert">Dessert</option>
-                                            </select>
-                                        </div>
-
-                                        <div className="col-md-4">
-                                            <label className="form-label fw-bold">Origin</label>
-                                            <input
-                                                type="text"
-                                                className="form-control rounded-3"
-                                                value={customRecipeForm.area}
-                                                onChange={(e) =>
-                                                    setCustomRecipeForm({
-                                                        ...customRecipeForm,
-                                                        area: e.target.value
-                                                    })
-                                                }
-                                                placeholder="e.g. Italian, Finnish, Mexican"
-                                            />
-                                        </div>
-
-                                        <div className="col-md-4">
-                                            <label className="form-label fw-bold">Image URL (Optional)</label>
-                                            <input 
-                                                type="url" 
-                                                className="form-control rounded-3 mb-2" 
-                                                value={customRecipeForm.image}
-                                                onChange={(e) => setCustomRecipeForm({ ...customRecipeForm, image: e.target.value })}
-                                                placeholder="https://example.com/image.jpg"
-                                            />
-
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="form-control rounded-3"
-                                                onChange={(e) => {
-                                                    const file = e.target.files[0];
-
-                                                    if (!file) return;
-
-                                                    const reader = new FileReader();
-
-                                                    reader.onloadend = () => {
-                                                        setCustomRecipeForm({
-                                                            ...customRecipeForm,
-                                                            image: reader.result
-                                                        });
-                                                    };
-
-                                                    reader.readAsDataURL(file);
-                                                }}
-                                            />
-
-                                        </div>
-                                    </div>
-
-                                    {/* Dynamic Ingredients Section */}
-                                    <div className="mb-3">
-                                        <label className="form-label fw-bold">Ingredients</label>
-                                        {customRecipeForm.ingredients.map((ing, idx) => (
-                                            <div key={idx} className="d-flex gap-2 mb-2">
-                                            <input 
-                                                type="text" 
-                                                className="form-control rounded-3" 
-                                                placeholder="Amount (e.g. 200g, 1 cup)"
-                                                value={ing.measure}
-                                                onChange={(e) => handleIngredientChange(idx, 'measure', e.target.value)}
-                                            />
-                                            <input 
-                                                type="text" 
-                                                className="form-control rounded-3" 
-                                                placeholder="Ingredient (e.g. Flour)"
-                                                value={ing.ingredient}
-                                                onChange={(e) => handleIngredientChange(idx, 'ingredient', e.target.value)}
-                                            />
-                                            </div>
-                                        ))}
-                                        <button 
-                                            type="button" 
-                                            className="btn btn-outline-secondary btn-sm rounded-3 mt-1"
-                                            onClick={addIngredientRow}
-                                        >
-                                            + Add Ingredient
-                                        </button>
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <label className="form-label fw-bold">Instructions</label>
-                                        <textarea 
-                                            className="form-control rounded-3" 
-                                            rows="4" 
-                                            required
-                                            value={customRecipeForm.instructions}
-                                            onChange={(e) => setCustomRecipeForm({ ...customRecipeForm, instructions: e.target.value })}
-                                            placeholder="Step 1: Preheat oven..."
-                                        ></textarea>
-                                    </div>
-                                </div>
-
-                                <div className="modal-footer border-0 bg-light p-3">
-                                    <button type="button" className="btn btn-secondary rounded-3" onClick={() => setShowAddModal(false)}>
-                                        Cancel
-                                    </button>
-                                    <button type="submit" className="btn btn-primary rounded-3 px-4">
-                                        Save Recipe
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <AddRecipeModal
+                show={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSaved={loadCookbook}
+            />
         </div>
     );
 }
