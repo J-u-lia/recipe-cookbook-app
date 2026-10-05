@@ -1,8 +1,10 @@
 // follows similar strucutr to cooking screen
 //IMPORTS
 import { useState, useEffect } from 'react';    // import again useState and useEffect the react hooks
-import { Cake, Search, Cookie, Sparkles, Scale, CheckSquare, Square, Users, Minus, Plus } from 'lucide-react';  // icons from lucide
+import { Cake, Search, Cookie, Sparkles, Scale, CheckSquare, Square, Users, Minus, Plus, Heart } from 'lucide-react';  // icons from lucide
 import './Baking.css';  // style sheet
+// helper function for cookbook
+import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
 
 // creating the React component Baking which can be displayed
 function Baking() {
@@ -18,6 +20,9 @@ function Baking() {
 
     // for portion scaling
     const [servings, setServings] = useState(4);
+
+    // Local state trigger to force UI re-render when saving/unsaving recipes
+    const [, setSavedState] = useState(false);
 
     const categories = ['Dessert', 'Breakfast', 'Side'];    // the different categories to choose from from the TheMealDB
 
@@ -91,6 +96,20 @@ function Baking() {
             [index]: !prev[index],  // takes the current value of this ingredient index and reverses it so if prev[1] = false then it is true now so it can go from unchecked to checked and from checked to unchecked
         }));
     };
+
+    // Toggle save handler with state trigger
+    const handleToggleSave = () => {
+        if (!selectedRecipe) return;
+
+        const recipeToSave = {
+            ...selectedRecipe,
+            strCategory: selectedRecipe.strCategory || 'Baking'
+        };
+
+        toggleSaveRecipe(recipeToSave);
+        setSavedState((prev) => !prev); // force immediate re-render
+    };
+
 
     // UI that this component should display
     return (
@@ -182,11 +201,19 @@ function Baking() {
                 <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
                     <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                         <div className="modal-content rounded-4 border-0 shadow">
-                            <div className="modal-header border-0 bg-light p-4">
+                            <div className="modal-header border-0 bg-light p-4 d-flex justify-content-between align-items-start">
                                 <div>
                                     <span className="badge bg-primary text-white fw-bold mb-2">{categoryFilter}</span>
                                     <h3 className="modal-title fw-bold">{selectedRecipe.strMeal}</h3>
                                 </div>
+                                {/* a button to save the recipe for your cookbook */}
+                                <button
+                                    onClick={handleToggleSave}
+                                    className={`btn btn-sm ${isRecipeSaved(selectedRecipe.idMeal) ? 'btn-danger' : 'btn-outline-danger'} rounded-pill d-flex align-items-center gap-1 px-3 me-2`}
+                                >
+                                    <Heart size={16} fill={isRecipeSaved(selectedRecipe.idMeal) ? 'currentColor' : 'none'} />
+                                    {isRecipeSaved(selectedRecipe.idMeal) ? 'Saved' : 'Save'}
+                                </button>
                                 <button
                                     type="button"
                                     className="btn-close"

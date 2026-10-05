@@ -5,8 +5,10 @@
 // with useState React remembers Information that changes, useEffect is for runnging a code when sth happens in the component
 import { useState, useEffect } from 'react';
 // import icons from lucide react
-import { Search, Flame, Clock, Users, Plus, Minus, CheckSquare, Square } from 'lucide-react';
+import { Search, Flame, Clock, Users, Plus, Minus, CheckSquare, Square, Heart } from 'lucide-react';
 import './Cooking.css'; // import .css file for styling
+// helper function for cookbook
+import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
 
 // component called Cooking
 function Cooking() {
@@ -17,6 +19,9 @@ function Cooking() {
     const [selectedRecipe, setSelectedRecipe] = useState(null); // stores recipe that user has clicked, at beginning no selected recipe
     const [servings, setServings] = useState(4);    // number of servings selected by user
     const [checkedIngredients, setCheckedIngredients] = useState({});   // stores which ingredient the user has checked
+
+    // State trigger to force immediate UI updates on heart toggle
+    const [, setSavedState] = useState(false);
 
     // Categories you can select (available from TheMealDB) for cooking dishes
     const categories = ['Chicken', 'Beef', 'Pasta', 'Seafood', 'Vegetarian', 'Side'];
@@ -106,7 +111,20 @@ function Cooking() {
         }));
     };
     
-    
+    // Toggle save handler that updates both localStorage and local UI state
+    const handleToggleSave = () => {
+        if (!selectedRecipe) return;
+        
+        // Ensure strCategory exists (fallback to 'Cooking')
+        const recipeToSave = {
+            ...selectedRecipe,
+            strCategory: selectedRecipe.strCategory || 'Cooking'
+        };
+
+        toggleSaveRecipe(recipeToSave);
+        setSavedState((prev) => !prev); // Trigger immediate re-render
+    };
+
     // beginn of JSX so React will diplay
     return (
         // main page container with css class and bottom padding
@@ -210,6 +228,14 @@ function Cooking() {
                                     <span className="badge bg-warning text-dark fw-bold mb-2">{categoryFilter}</span>
                                     <h3 className="modal-title fw-bold">{selectedRecipe.strMeal}</h3>
                                 </div>
+                                {/* a button to save the recipe for your cookbook */}
+                                <button
+                                    onClick={handleToggleSave}
+                                    className={`btn btn-sm ${isRecipeSaved(selectedRecipe.idMeal) ? 'btn-danger' : 'btn-outline-danger'} rounded-pill d-flex align-items-center gap-1 px-3 me-2`}
+                                >
+                                    <Heart size={16} fill={isRecipeSaved(selectedRecipe.idMeal) ? 'currentColor' : 'none'} />
+                                    {isRecipeSaved(selectedRecipe.idMeal) ? 'Saved' : 'Save'}
+                                </button>
                                 {/* when the Button (it is an X because of close) is clicked the modal disappears
                                     so with React state it is controlled whether modal exists or not */}
                                 <button
