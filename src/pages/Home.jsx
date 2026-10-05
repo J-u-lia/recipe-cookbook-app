@@ -8,17 +8,12 @@
 {/* IMPORTS */}           
 import { useState } from 'react';   {/* import useState hook from Reakt - allows component to remember information that can change (e.g what has user typed into search box) */}
 import { Link, useNavigate } from 'react-router-dom';   {/* import Link and useNavigate from React Router - creates navigation links without completely reloading page and allows JS code to navigate user to another route */}
-import { Search, Flame, Cake, Utensils, Sparkles, ChefHat } from 'lucide-react';    {/* import several icons from lucide-react library - ready-made React components that display icons*/}
+import { Flame, Cake, Sparkles, ChefHat } from 'lucide-react';    {/* import several icons from lucide-react library - ready-made React components that display icons*/}
 import './Home.css';    {/* import the styling file for the Home page*/}
+import SearchResults from '../components/SearchResults';
 
 // Home react component - everything returned from this becomes the Home page UI
 function Home() {
-    // create piece of state with name searchTerm - shows whatever user has typed into search box
-    // setSearchTerm is function to change searchTerm
-    const [searchTerm, setSearchTerm] = useState('');   // searchTerm is an empty string at the beginning
-    // navigation function with React Router
-    const navigate = useNavigate(); // with that can later call e.g. navigate('cooking') to navigate to anotehr screen
-
     // array with category links underneath search bar
     const categories = [
         // the name is text shown to user
@@ -29,18 +24,6 @@ function Home() {
         { name: '#Desserts', path: '/baking?type=sweet' },
         { name: '#Pasta', path: '/cooking?query=pasta' },
     ];
-
-    // function that runs when search from is submitted
-    const handleSearchSubmit = (e) => {
-        e.preventDefault(); // prevent Browsers normal from submission - so no reloading page
-        // if the user has entered a searchTerm then with trim() the spaces from the beginning and the end of the string is removed
-        if (searchTerm.trim()) {
-            // navigate to cooking page with the searchTerm included in URL as query paramter
-            // because user should search safe - encodeURIComponent() 
-            // important with '' it doesn't work it needs to be ``
-            navigate(`/cooking?search=${encodeURIComponent(searchTerm)}`);
-        }
-    };
 
     // contains JSX that react will display
     return (
@@ -60,35 +43,9 @@ function Home() {
                         Discover delicious cooking & baking recipes for every craving.
                     </p>
 
-                    {/* SEARCH FORM */}
-                    {/* when user submits sth React calls function handleSearchSubmit 
-                        form is on middle screens 8 columns wide, large screens 6, elements are horizontally centra and margin bottom*/}
-                    <form onSubmit={handleSearchSubmit} className="col-md-8 col-lg-6 mx-auto mb-3">
-                        {/* input group of bootstrap, visually combine the search icon, input field and search button */}
-                        <div className="input-group input-group-lg shadow-sm">
-                            {/* container for search icon from lucide react in size 22
-                            span is a tag that is inline so doesn't force line break like <div> */}
-                            <span className="input-group-text bg-white border-0 text-muted ps-3">
-                                <Search size={22} />
-                            </span>
-                            {/* actual search input
-                             bootstrap class for forms, no border, fontsize and side padding
-                             text displayed before user types anything
-                             value gets controlled by react so whatever is inside searchTerm is displayed here
-                             function runs everytime user types sth to update the react state */}
-                            <input
-                                type="text"
-                                className="form-control border-0 fs-6 ps-2"
-                                placeholder="Search by dish or ingredient..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            {/* submit button with bootstrap class for buttons, with dark backgroudn, padding horizontally, fontweight to semibold */}
-                            <button className="btn btn-dark px-4 fw-semibold" type="submit">
-                                Search
-                            </button>
-                        </div>
-                    </form>
+                    {/* import the function for the search components so they will be renderd here */}
+                    <SearchResults />
+
                     
                     {/* CATEGORY TAGS */}
                     {/* contains shortcut buttons with bootstrap flex container layout with flex items children, line-break, childs centered horizontally on mainaxis, evenly spredded disptance between children, margin top*/}
