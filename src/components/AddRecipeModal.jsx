@@ -1,17 +1,60 @@
 // copied logic for creating recipe from MyCookbook to seperate file - easier to debug
-import { useState } from 'react';
+import { useState, useEffect } from 'react';    // useEffect is now needed for the side effect
 import { saveCustomRecipe } from '../utils/cookbookHelper';
 
-function AddRecipeModal({ show, onClose, onSaved }) {
-
-    const [customRecipeForm, setCustomRecipeForm] = useState({
+function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
+    // form if there wasn't a recipe in there before
+    const emptyRecipeForm = {
         title: '',
         category: 'Cooking',
         area: '',
         instructions: '',
         image: '',
         ingredients: [{ ingredient: '', measure: '' }]
-    });
+    };
+
+    // the form that is then changed is now at the beginning the same as the empty one
+    const [customRecipeForm, setCustomRecipeForm] = useState(emptyRecipeForm);
+
+    // if user clicks Edit then the recipeToEdit contains the strMeal, Category, ect. and through this effect that is converted back into the format the form expects title, category, area, ...
+    useEffect(() => {
+        // if we are editing an existing recipe
+        if (recipeToEdit) {
+            // Convert the stored recipe back into the format
+            // that form uses.
+            const ingredients = [];
+            // iterate thorugh the 20 possivle ingredient keys and then match the TheMealDB API to the stored schea foramt
+            for (let i = 1; i <= 20; i++) {
+                const ingredient = recipeToEdit[`strIngredient${i}`];
+                const measure = recipeToEdit[`strMeasure${i}`];
+
+                // Only add ingredients that actually contain something.
+                if (ingredient && ingredient.trim() !== '') {
+                    ingredients.push({
+                        ingredient,
+                        measure: measure || ''
+                    });
+                }
+            }
+
+            // populate the modal form state with the existing recipe details
+            setCustomRecipeForm({
+                title: recipeToEdit.strMeal || '',
+                category: recipeToEdit.strCategory || 'Cooking',
+                area: recipeToEdit.strArea || '',
+                instructions: recipeToEdit.strInstructions || '',
+                image: recipeToEdit.strMealThumb || '',
+                ingredients: ingredients.length > 0
+                    ? ingredients
+                    : [{ ingredient: '', measure: '' }]
+            });
+
+        } else {
+            // If we are creating a new recipe,
+            // start with an empty form.
+            setCustomRecipeForm(emptyRecipeForm);
+        }
+    }, [recipeToEdit, show]);
 
     const handleIngredientChange = (index, field, value) => {
         const updated = [...customRecipeForm.ingredients];
@@ -55,20 +98,20 @@ function AddRecipeModal({ show, onClose, onSaved }) {
 
         if (!customRecipeForm.title.trim()) return;
 
-        const saved = saveCustomRecipe(customRecipeForm);
+        const recipeData = {
+            ...customRecipeForm,
+
+            // If editing, keep the existing ID.
+            // If creating, saveCustomRecipe will create a new ID.
+            idMeal: recipeToEdit?.idMeal
+        };
+
+        const saved = saveCustomRecipe(recipeData);
 
         if (saved) {
             onSaved();
             onClose();
-
-            setCustomRecipeForm({
-                title: '',
-                category: 'Cooking',
-                area: '',
-                instructions: '',
-                image: '',
-                ingredients: [{ ingredient: '', measure: '' }]
-            });
+            setCustomRecipeForm(emptyRecipeForm);
         }
     };
 
@@ -84,7 +127,7 @@ function AddRecipeModal({ show, onClose, onSaved }) {
 
                     <div className="modal-header border-0 bg-light p-4 justify-content-between">
                         <h4 className="fw-bold mb-0">
-                            Create Custom Recipe
+                            {recipeToEdit ? 'Edit Recipe' : 'Create Custom Recipe'}
                         </h4>
 
                         <button

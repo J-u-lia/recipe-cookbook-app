@@ -155,6 +155,7 @@ function MyCookbook() {
         });
 
     const [showAddModal, setShowAddModal] = useState(false);    // controls if the create custom recipe is visible or not
+    const [recipeToEdit, setRecipeToEdit] = useState(null);
 
     return (
         <div className="my-cookbook-page pb-5">
@@ -233,7 +234,10 @@ function MyCookbook() {
                     <div className="d-flex gap-2">
                         {cookbookSection === 'created' && (
                             <button
-                                onClick={() => setShowAddModal(true)}
+                                onClick={() => {
+                                    setRecipeToEdit(null);
+                                    setShowAddModal(true);
+                                }}
                                 className="btn btn-primary rounded-pill px-4 fw-semibold d-flex align-items-center gap-2"
                             >
                                 <PlusCircle size={18} />
@@ -281,7 +285,10 @@ function MyCookbook() {
                             </p>
 
                             <button
-                                onClick={() => setShowAddModal(true)}
+                                onClick={() => {
+                                    setRecipeToEdit(null);
+                                    setShowAddModal(true);
+                                }}
                                 className="btn btn-primary rounded-pill px-4 fw-semibold"
                             >
                                 <PlusCircle size={18} className="me-1" />
@@ -499,14 +506,37 @@ function MyCookbook() {
                             
                             {/* close button to make modal disappear */}
                             <div className="modal-footer border-0 bg-light p-3 d-flex justify-content-between">
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-danger px-4 fw-semibold rounded-3 d-flex align-items-center gap-2"
-                                    onClick={() => removeRecipe(selectedRecipe.idMeal)}
-                                >
-                                    <Trash2 size={18} /> Remove
-                                </button>
+                                <div className="d-flex gap-2">
+                                    {/* Only show Edit for recipes created by the user.
+                                        API/liked recipes cannot be edited. */}
+                                    {selectedRecipe.isCustom && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-primary px-4 fw-semibold rounded-3 d-flex align-items-center gap-2"
+                                            onClick={() => {
+                                                setRecipeToEdit(selectedRecipe);
+                                                setSelectedRecipe(null);
+                                                setShowAddModal(true);
+                                            }}
+                                        >
+                                            <PlusCircle size={18} />
+                                            Edit
+                                        </button>
+                                    )}
 
+                                    {/* Remove the current recipe */}
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-danger px-4 fw-semibold rounded-3 d-flex align-items-center gap-2"
+                                        onClick={() => removeRecipe(selectedRecipe.idMeal)}
+                                    >
+                                        <Trash2 size={18} />
+                                        Remove
+                                    </button>
+
+                                </div>
+
+                                {/* Close the recipe details modal */}
                                 <button
                                     type="button"
                                     className="btn btn-secondary px-4 fw-semibold rounded-3"
@@ -514,6 +544,7 @@ function MyCookbook() {
                                 >
                                     Close
                                 </button>
+
                             </div>
                         </div>
                     </div>
@@ -523,8 +554,12 @@ function MyCookbook() {
             {/* ADD CUSTOM RECIPE MODAL */}
             <AddRecipeModal
                 show={showAddModal}
-                onClose={() => setShowAddModal(false)}
+                onClose={() => {
+                    setShowAddModal(false);
+                    setRecipeToEdit(null);
+                }}
                 onSaved={loadCookbook}
+                recipeToEdit={recipeToEdit}
             />
         </div>
     );
