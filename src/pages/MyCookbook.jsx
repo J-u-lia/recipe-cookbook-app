@@ -12,6 +12,7 @@ function MyCookbook() {
     const [savedRecipes, setSavedRecipes] = useState([]);
     // storing which cookbook filter is currently selected
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [cookbookSection, setCookbookSection] = useState('liked');
     // which recipe is curretnly looked at
     const [selectedRecipe, setSelectedRecipe] = useState(null);
 
@@ -53,14 +54,25 @@ function MyCookbook() {
         }
     };
 
-    // remove all saved recipes
-    const clearCookbook = () => {
+    // remove all recipes from the page you are in so either all liked recipes or all custom recipes but not both in one go
+    const clearCurrentSection = () => {
+        const sectionName = cookbookSection === 'liked'
+            ? 'liked recipes'
+            : 'your recipes';
         // open browser confirmation dialog and ask user if he is sure maybe he didnt mean to - chance to stop it
-        if (window.confirm('Are you sure you want to remove all saved recipes?')) {
-            setSavedRecipes([]);    // all recipes removing from react state
-            localStorage.removeItem('my_cookbook'); // remve key from local storage
-            setSelectedRecipe(null);    // no recipes displayed
+        if (!window.confirm(`Are you sure you want to remove all ${sectionName}?`)) {
+            return;
         }
+
+        const updated = savedRecipes.filter((item) =>
+            cookbookSection === 'liked'
+                ? item.isCustom
+                : !item.isCustom
+        );
+
+        setSavedRecipes(updated);
+        localStorage.setItem('my_cookbook', JSON.stringify(updated));
+        setSelectedRecipe(null);
     };
 
     // fetch full details from API of recipe when clicking View
@@ -117,94 +129,182 @@ function MyCookbook() {
         }));
     };
 
+    // it is now possible to decide Liked vs My Recipes and then the category filter is applied
     // create new array with recipes that match the selectedd category
-    const filteredRecipes = savedRecipes.filter((meal) => {
-        // if user is at category all then every saved recipe is displayed
-        if (selectedCategory === 'All') return true;
-        // if it is at baking then onl the recipes in baking or desserts
-        if (selectedCategory === 'Baking') return meal.strCategory === 'Dessert' || meal.strCategory === 'Baking';
-        // if it is neither dessert nor baking htne it is cooking
-        return meal.strCategory !== 'Dessert' && meal.strCategory !== 'Baking';
-    });
+    const filteredRecipes = savedRecipes
+        .filter((meal) =>
+            cookbookSection === 'liked'
+                ? !meal.isCustom
+                : meal.isCustom
+        )
+        .filter((meal) => {
+            // if user is at category all then every saved recipe is displayed
+            if (selectedCategory === 'All') return true;
+            // if it is at baking then onl the recipes in baking or desserts
+            if (selectedCategory === 'Baking') {
+                return (
+                    meal.strCategory === 'Dessert' ||
+                    meal.strCategory === 'Baking'
+                );
+            }
+            // if it is neither dessert nor baking htne it is cooking
+            return (
+                meal.strCategory !== 'Dessert' &&
+                meal.strCategory !== 'Baking'
+            );
+        });
 
     const [showAddModal, setShowAddModal] = useState(false);    // controls if the create custom recipe is visible or not
 
     return (
         <div className="my-cookbook-page pb-5">
             {/* HERO BANNER with Bookmark icon, shor header and paragraph */}
-            <div className="bg-primary text-white p-4 rounded-4 mb-4 shadow-sm d-flex align-items-center justify-content-between flex-wrap gap-3">
-                <div>
-                    <div className="d-flex align-items-center gap-2 fw-bold text-uppercase small mb-1 opacity-90">
-                        <Bookmark size={20} /> Personal Recipe Collection
-                    </div>
-                    <h1 className="fw-bold mb-1">My Cookbook</h1>
-                    <p className="mb-0 opacity-90">Your saved favorites, ready to bake and cook anytime.</p>
+            <div className="bg-primary text-white p-4 rounded-4 mb-4 shadow-sm">
+                <div className="d-flex align-items-center gap-2 fw-bold text-uppercase small mb-1 opacity-90">
+                    <Bookmark size={20} />
+                    Personal Recipe Collection
                 </div>
-                {/* button that makes it possible to write the recipe */}
-                <button 
-                    onClick={() => setShowAddModal(true)} 
-                    className="btn btn-light text-primary fw-semibold rounded-3 d-flex align-items-center gap-2"
-                >
-                    <PlusCircle size={18} /> Add My Recipe
-                </button>
 
-                {/* when there is one recipe displayed then this clear all button appears
-                    so you can delete all saved recipes */}
-                {savedRecipes.length > 0 && (
-                    <button onClick={clearCookbook} className="btn btn-outline-light btn-sm fw-semibold rounded-3">
-                        Clear All
+                <h1 className="fw-bold mb-1">My Cookbook</h1>
+
+                <p className="mb-0 opacity-90">
+                    Your saved favorites and your own recipes, all in one place.
+                </p>
+            </div>
+            
+            {/* liked/My Recipes buttons */}
+            <div className="d-flex justify-content-center mb-4">
+                <div className="btn-group bg-light rounded-pill p-1 shadow-sm">
+                    <button
+                        onClick={() => {
+                            setCookbookSection('liked');
+                            setSelectedCategory('All');
+                        }}
+                        className={`btn rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2 ${
+                            cookbookSection === 'liked'
+                                ? 'btn-primary'
+                                : 'btn-light'
+                        }`}
+                    >
+                        <Heart size={18} />
+                        Liked Recipes
                     </button>
-                )}
+
+                    <button
+                        onClick={() => {
+                            setCookbookSection('created');
+                            setSelectedCategory('All');
+                        }}
+                        className={`btn rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2 ${
+                            cookbookSection === 'created'
+                                ? 'btn-primary'
+                                : 'btn-light'
+                        }`}
+                    >
+                        <PlusCircle size={18} />
+                        My Recipes
+                    </button>
+                </div>
             </div>
 
             {/* CATEGORY FILTER Buttons - one for All, Cooking, Baking */}
-            {savedRecipes.length > 0 && (
-                <div className="d-flex gap-2 mb-4">
-                    {/* create array with possible button options and give them the react key
+            {filteredRecipes.length > 0 && (
+
+                <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+
+                    <div className="d-flex gap-2">
+                        {/* create array with possible button options and give them the react key
                         style them different if selected */}
-                    {['All', 'Cooking', 'Baking'].map((cat) => (
-                        <button
-                            key={cat}
-                            onClick={() => setSelectedCategory(cat)}
-                            className={`btn rounded-pill px-4 py-2 fw-semibold border-0 ${
-                                selectedCategory === cat ? 'btn-primary shadow-sm' : 'btn-light text-dark'
-                            }`}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+                        {['All', 'Cooking', 'Baking'].map((cat) => (
+                            <button
+                                key={cat}
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`btn rounded-pill px-4 py-2 fw-semibold border-0 ${
+                                    selectedCategory === cat
+                                        ? 'btn-primary shadow-sm'
+                                        : 'btn-light text-dark'
+                                }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+                    {/* if user is in section created then there is the Add my recipe button availabke and also the button to clear the recipes this labe changes when in liked*/}
+                    <div className="d-flex gap-2">
+                        {cookbookSection === 'created' && (
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="btn btn-primary rounded-pill px-4 fw-semibold d-flex align-items-center gap-2"
+                            >
+                                <PlusCircle size={18} />
+                                Add My Recipe
+                            </button>
+                        )}
+
+                        {filteredRecipes.length > 0 && (
+                            <button
+                                onClick={clearCurrentSection}
+                                className="btn btn-outline-danger rounded-pill px-3 fw-semibold"
+                            >
+                                <Trash2 size={16} />
+                                Clear {cookbookSection === 'liked' ? 'Liked' : 'My'} Recipes
+                            </button>
+                        )}
+                    </div>
+
                 </div>
             )}
-
+        
             {/* EMPTY STATE */}
-            {/* if nothing is saved then display this text */}
-            {savedRecipes.length === 0 ? (
+            {/* if nothing is saved in the filteredRecipes (now this checikng and not savedRecipes anymore because filteredRecipes contains recipes from the currently selected section and categorx) then display this message */}
+            {filteredRecipes.length === 0 ? (
                 <div className="text-center py-5 bg-light rounded-4 border">
-                    <Heart size={48} className="text-muted mb-3 opacity-50" />
-                    <h4 className="fw-bold text-dark">Your Cookbook is Empty</h4>
-                    <p className="text-muted mb-3">
-                        You haven't saved any recipes yet. Click the heart icon on any recipe to save it here!
-                    </p>
-                </div>
-            ) : filteredRecipes.length === 0 ? (
-                /* if there are recipes saved but you are in the wrong cateogry then display this text */
-                <div className="text-center py-5 bg-light rounded-4 border">
-                    <p className="text-muted mb-0">No saved recipes in this category.</p>
+                    {/* different message for liked and my recipes */}
+                    {cookbookSection === 'liked' ? (
+                        <>
+                            <Heart size={48} className="text-muted mb-3 opacity-50" />
+                            <h4 className="fw-bold text-dark">
+                                No Liked Recipes Yet
+                            </h4>
+                            <p className="text-muted mb-0">
+                                You haven't liked any recipes yet. Click the heart on a recipe to save it here!
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <PlusCircle size={48} className="text-muted mb-3 opacity-50" />
+                            <h4 className="fw-bold text-dark">
+                                No Recipes Yet
+                            </h4>
+                            <p className="text-muted mb-3">
+                                Create your own recipe and it will appear here.
+                            </p>
+
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="btn btn-primary rounded-pill px-4 fw-semibold"
+                            >
+                                <PlusCircle size={18} className="me-1" />
+                                Add My Recipe
+                            </button>
+                        </>
+                    )}
                 </div>
             ) : (
-                /* RECIPE GRID
-                        if there are recipes selected then display them the same way as in there own cateory in the responsive grid*/
+                /* if the filteredRecipes is not empty then all matching recipes are displayed in teh RECIPE GRID */
                 <div className="row g-4">
+                    {/* with map for every recipe in filteredRecipe a recipe card is created */}
                     {filteredRecipes.map((meal) => (
                         <div key={meal.idMeal} className="col-sm-6 col-md-4 col-lg-3">
-                            {/* first the picture (src and alt from API) and beneath that the category and the name of the meal */}
                             <div className="card h-100 shadow-sm rounded-4 overflow-hidden position-relative">
+
                                 <img
                                     src={meal.strMealThumb}
                                     alt={meal.strMeal}
                                     className="card-img-top"
                                     style={{ height: '180px', objectFit: 'cover' }}
                                 />
+
                                 <div className="card-body d-flex flex-column justify-content-between p-3">
                                     <div>
                                         {meal.strCategory && (
@@ -212,12 +312,16 @@ function MyCookbook() {
                                                 {meal.strCategory}
                                             </span>
                                         )}
-                                        <h5 className="card-title fw-bold text-truncate" title={meal.strMeal}>
+
+                                        <h5
+                                            className="card-title fw-bold text-truncate"
+                                            title={meal.strMeal}
+                                        >
                                             {meal.strMeal}
                                         </h5>
                                     </div>
                                     
-                                    {/* the details of the recipe should be displayed clicking the view button */}
+                                    {/* view and remove button */}
                                     <div className="d-flex gap-2 mt-3">
                                         <button
                                             onClick={() => fetchRecipeDetails(meal.idMeal)}
@@ -225,7 +329,7 @@ function MyCookbook() {
                                         >
                                             <Eye size={16} /> View
                                         </button>
-                                        {/* recipes can be removed also individual with the Trash symbol */}
+
                                         <button
                                             onClick={() => removeRecipe(meal.idMeal)}
                                             className="btn btn-outline-danger btn-sm rounded-3 px-2"
@@ -235,6 +339,7 @@ function MyCookbook() {
                                         </button>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     ))}
