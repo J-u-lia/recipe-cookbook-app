@@ -1,0 +1,77 @@
+ /* My Cookbook Styles */
+
+.cookbook-hero {
+  background: linear-gradient(
+    135deg,
+    #f3dfe2 0%,
+    #eed7dc 100%
+  );
+  color: #705766;
+}
+
+.cookbook-card {
+  border: 1px solid #eadcdf;
+  background: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cookbook-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(112, 87, 102, 0.09);
+}
+
+.cookbook-section {
+  background: #ffffff;
+  border: 1px solid #eadcdf;
+  box-shadow: 0 6px 20px rgba(112, 87, 102, 0.05);
+}
+
+.cookbook-tab {
+  transition: all 0.2s ease;
+}
+
+.cookbook-tab:hover {
+  transform: translateY(-1px);
+}
+
+.empty-cookbook {
+  background: #faf1f2;
+  border: 1px solid #eadcdf;
+}
+
+/* My Cookbook buttons */
+
+.cookbook-tab-active {
+  background-color: #c9a9b5 !important;
+  border-color: #c9a9b5 !important;
+  color: #624d5a !important;
+}
+
+.cookbook-tab-active:hover {
+  background-color: #b78f9e !important;
+  border-color: #b78f9e !important;
+  color: #ffffff !important;
+}
+
+.cookbook-filter-active {
+  background-color: #c9a9b5 !important;
+  color: #624d5a !important;
+}
+
+.cookbook-action {
+  background-color: #c9a9b5 !important;
+  border-color: #c9a9b5 !important;
+  color: #624d5a !important;
+}
+
+.cookbook-action:hover {
+  background-color: #b78f9e !important;
+  border-color: #b78f9e !important;
+  color: #ffffff !important;
+}
+
+.cookbook-category-small {
+  background-color: #c9a9b5 !important;
+  color: #624d5a !important;
+  border: 1px solid #c9a9b5 !important;
+}

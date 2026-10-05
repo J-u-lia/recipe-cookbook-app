@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';    // react hooks to remember infor
 import { Bookmark, Heart, Trash2, Eye, Users, Minus, Plus, CheckSquare, Square, PlusCircle } from 'lucide-react';   // icons
 import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';  //helper functions
 import AddRecipeModal from '../components/AddRecipeModal';
+import './MyCookbook.css';
 
 // React Component
 function MyCookbook() {
@@ -160,7 +161,7 @@ function MyCookbook() {
     return (
         <div className="my-cookbook-page pb-5">
             {/* HERO BANNER with Bookmark icon, shor header and paragraph */}
-            <div className="bg-primary text-white p-4 rounded-4 mb-4 shadow-sm">
+            <div className="cookbook-hero p-4 rounded-4 mb-4 shadow-sm">
                 <div className="d-flex align-items-center gap-2 fw-bold text-uppercase small mb-1 opacity-90">
                     <Bookmark size={20} />
                     Personal Recipe Collection
@@ -183,7 +184,7 @@ function MyCookbook() {
                         }}
                         className={`btn rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2 ${
                             cookbookSection === 'liked'
-                                ? 'btn-primary'
+                                ? 'cookbook-tab-active'
                                 : 'btn-light'
                         }`}
                     >
@@ -198,7 +199,7 @@ function MyCookbook() {
                         }}
                         className={`btn rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2 ${
                             cookbookSection === 'created'
-                                ? 'btn-primary'
+                                ? 'cookbook-tab-active'
                                 : 'btn-light'
                         }`}
                     >
@@ -222,7 +223,7 @@ function MyCookbook() {
                                 onClick={() => setSelectedCategory(cat)}
                                 className={`btn rounded-pill px-4 py-2 fw-semibold border-0 ${
                                     selectedCategory === cat
-                                        ? 'btn-primary shadow-sm'
+                                        ? 'cookbook-filter-active shadow-sm'
                                         : 'btn-light text-dark'
                                 }`}
                             >
@@ -238,7 +239,7 @@ function MyCookbook() {
                                     setRecipeToEdit(null);
                                     setShowAddModal(true);
                                 }}
-                                className="btn btn-primary rounded-pill px-4 fw-semibold d-flex align-items-center gap-2"
+                                className="btn cookbook-action rounded-pill px-4 fw-semibold d-flex align-items-center gap-2"
                             >
                                 <PlusCircle size={18} />
                                 Add My Recipe
@@ -315,7 +316,7 @@ function MyCookbook() {
                                 <div className="card-body d-flex flex-column justify-content-between p-3">
                                     <div>
                                         {meal.strCategory && (
-                                            <span className="badge bg-primary-subtle text-primary-emphasis mb-2">
+                                            <span className="badge cookbook-category-small mb-2">
                                                 {meal.strCategory}
                                             </span>
                                         )}
@@ -332,9 +333,9 @@ function MyCookbook() {
                                     <div className="d-flex gap-2 mt-3">
                                         <button
                                             onClick={() => fetchRecipeDetails(meal.idMeal)}
-                                            className="btn btn-outline-primary btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
-                                        >
-                                            <Eye size={16} /> View
+                                            className="btn btn-outline-dark btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
+                                        >       
+                                            <Eye size={16} /> View Recipe
                                         </button>
 
                                         <button
@@ -463,7 +464,7 @@ function MyCookbook() {
                                         )}
                                         {/* display category and origin from recipe below that */}
                                         <div className="d-flex gap-2">
-                                            <span className="badge bg-secondary-subtle text-secondary px-3 py-2">
+                                            <span className="badge cookbook-category-small px-3 py-2">
                                                 Category: {selectedRecipe.strCategory || 'General'}
                                             </span>
                                             <span className="badge bg-secondary-subtle text-secondary px-3 py-2">

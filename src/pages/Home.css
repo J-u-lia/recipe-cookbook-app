@@ -1,14 +1,107 @@
-/* src/pages/Home.css */
+/* Home Page Styles */
+
 .hero-banner {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  background: linear-gradient(
+    135deg,
+    #f3e8df 0%,
+    #f1e8ed 50%,
+    #eeeaf5 100%
+  );
+  color: #4f4852;
 }
 
 .category-pill {
+  background-color: #f7f4f0 !important;
+  color: #68616a !important;
+  border: 1px solid #ebe5df !important;
   transition: all 0.2s ease-in-out;
 }
 
 .category-pill:hover {
-  background-color: #f59e0b !important;
-  color: #ffffff !important;
+  background-color: #c8ad96 !important;
+  color: #4f3f34 !important;
+  border-color: #c8ad96 !important;
   transform: translateY(-2px);
+}
+
+.home-card {
+  border: 1px solid #ebe6e1;
+  box-shadow: 0 8px 24px rgba(70, 60, 50, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(70, 60, 50, 0.09);
+}
+
+.cooking-nav-card {
+  background: linear-gradient(
+    135deg,
+    #dfeadf 0%,
+    #d4e4d5 100%
+  ) !important;
+}
+
+.cooking-nav-card h3 {
+  color: #705848;
+}
+
+.cooking-nav-card p {
+  color: #705848;
+  opacity: 0.8;
+}
+
+.cooking-accent {
+  color: #705848 !important;
+}
+
+.cooking-button {
+  background-color: #c8ad96 !important;
+  border-color: #c8ad96 !important;
+  color: #5f4939 !important;
+}
+
+.cooking-button:hover {
+  background-color: #b8957b !important;
+  border-color: #b8957b !important;
+  color: #ffffff !important;
+}
+
+.baking-nav-card {
+  background: linear-gradient(
+    135deg,
+    #e8e0f2 0%,
+    #ddd2eb 100%
+  ) !important;
+}
+
+.baking-nav-card h3 {
+  color: #405d6d;
+}
+
+.baking-nav-card p {
+  color: #405d6d;
+  opacity: 0.8;
+}
+
+.baking-accent {
+  color: #405d6d !important;
+}
+
+.baking-button {
+  background-color: #a9c7d8 !important;
+  border-color: #a9c7d8 !important;
+  color: #405d6d !important;
+}
+
+.baking-button:hover {
+  background-color: #8eafc2 !important;
+  border-color: #8eafc2 !important;
+  color: #ffffff !important;
+}
+
+.recipe-of-day-card {
+  background-color: #eedfc8 !important;
+  border: 1px solid #e3d1b8 !important;
 }

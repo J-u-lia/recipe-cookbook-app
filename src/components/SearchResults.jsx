@@ -13,7 +13,7 @@ function SearchResults() {
     const [searched, setSearched] = useState(false);    // stores if the user has searched sth or not so that the rendering works correctly when coming to home page
     const [checkedIngredients, setCheckedIngredients] = useState({});   // stores if ingredients has been cheecked or not
 
-    
+
 
 
     // the ingredient lsit is gotten from one complete meal object from the API because TheMealDB doesn't give ingredients as simple array
@@ -227,7 +227,7 @@ function SearchResults() {
                                         <button
                                             type="button"
                                             onClick={() => handleSelectRecipe(meal)}
-                                            className="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2 rounded-3 fw-semibold"
+                                            className="btn btn-outline-dark btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
                                         >
                                             <Eye size={16} /> View Recipe
                                         </button>

@@ -36,7 +36,7 @@ function Home() {
         <div className="home-page pb-5">
             {/* Hero Banner - introduction section at top of page*/}
             {/* margin at bottom, subtle drop shadow behind card and search bar */}
-            <div className="hero-section text-center text-white mb-5 shadow-sm">
+            <div className="hero-section text-center mb-5">
                 {/* padding on top and bottom */}
                 <div className="py-3">
                     <div className="d-flex justify-content-center align-items-center gap-2 mb-3">
@@ -82,52 +82,52 @@ function Home() {
 
             {/* NAVIGATION BANNERS */}
             <div className="row g-4 mb-5"> {/* bootstrap row with main navigation cards, row and column distance and margin bottom*/}
-            <div className="col-md-6">  {/* bootstrap medium devices 6 columns */}
-            <div className="card border-0 shadow-sm rounded-4 h-100 bg-light">  {/* the bootstrap card with no border, sall shadow, roundeed corners, fills all available height */}
-                <div className="card-body p-4 d-flex flex-column justify-content-between">  {/* area of content in card, padding, flexcontainer layout, flexcontainer axis is vertical, space between items evenly spreaded */}
-                <div>
-                    {/* small heading with flame icon and text */}
-                    <div className="d-flex align-items-center gap-2 text-warning fw-bold text-uppercase small mb-2">    {/* flexcontainer, items centered, evenly spreaded distance, text in orange/yellow, bold text, all big letters, text size, margin bottom */}
-                        <Flame size={20} /> Stove & Pan
+                <div className="col-md-6">  {/* bootstrap medium devices 6 columns */}
+                    <div className="card border-0 shadow-sm rounded-4 h-100 cooking-nav-card">  {/* the bootstrap card with no border, sall shadow, roundeed corners, fills all available height */}
+                        <div className="card-body p-4 d-flex flex-column justify-content-between">  {/* area of content in card, padding, flexcontainer layout, flexcontainer axis is vertical, space between items evenly spreaded */}
+                            <div>
+                                {/* small heading with flame icon and text */}
+                                <div className="d-flex align-items-center gap-2 cooking-accent fw-bold text-uppercase small mb-2">    {/* flexcontainer, items centered, evenly spreaded distance, text in orange/yellow, bold text, all big letters, text size, margin bottom */}
+                                    <Flame size={20} /> Stove & Pan
+                                </div>
+                                {/* main title of cooking card */}
+                                <h3 className="fw-bold mb-2">Savory Cooking Recipes</h3>
+                                {/* little description text */}
+                                <p className="text-muted mb-4">
+                                    Master pan-seared dishes, slow-simmered stews, stir-fries, and hearty stovetop meals.
+                                </p>
+                            </div>
+                            {/* react router link that takes user to cooking screen */}
+                            <Link to="/cooking" className="btn cooking-button text-dark fw-bold w-100 py-2 rounded-3">
+                                Explore Cooking Recipes →
+                            </Link>
+                        </div>
                     </div>
-                    {/* main title of cooking card */}
-                    <h3 className="fw-bold mb-2">Savory Cooking Recipes</h3>
-                    {/* little description text */}
-                    <p className="text-muted mb-4">
-                        Master pan-seared dishes, slow-simmered stews, stir-fries, and hearty stovetop meals.
-                    </p>
                 </div>
-                {/* react router link that takes user to cooking screen */}
-                <Link to="/cooking" className="btn btn-warning text-dark fw-bold w-100 py-2 rounded-3">
-                    Explore Cooking Recipes →
-                </Link>
-                </div>
-            </div>
-            </div>
-                        
-            {/* BAKING CARD */}
-            <div className="col-md-6">  {/* on second half of row (cooking was first 6 columns now baking the rest) */}
-            <div className="card border-0 shadow-sm rounded-4 h-100 bg-light">  {/* bootstrap card for baking section */}
-                <div className="card-body p-4 d-flex flex-column justify-content-between">  {/* content of card */}
-                <div>
-                    {/* content of card with cake icon and text */}
-                    <div className="d-flex align-items-center gap-2 text-primary fw-bold text-uppercase small mb-2">
-                        <Cake size={20} /> Oven & Bakery
+                            
+                {/* BAKING CARD */}
+                <div className="col-md-6">  {/* on second half of row (cooking was first 6 columns now baking the rest) */}
+                    <div className="card border-0 shadow-sm rounded-4 h-100 baking-nav-card">  {/* bootstrap card for baking section */}
+                        <div className="card-body p-4 d-flex flex-column justify-content-between">  {/* content of card */}
+                        <div>
+                            {/* content of card with cake icon and text */}
+                            <div className="d-flex align-items-center gap-2 baking-accent fw-bold text-uppercase small mb-2">
+                                <Cake size={20} /> Oven & Bakery
+                            </div>
+                            {/* main heading and little text below */}
+                            <h3 className="fw-bold mb-2">Sweet & Oven Bakes</h3>
+                            <p className="text-muted mb-4">
+                                Indulge in artisanal breads, fluffy cakes, cookies, and perfect oven-baked delights.
+                            </p>
+                        </div>
+                        {/* react router link that takes user to baking page */}
+                        <Link to="/baking" className="btn baking-button fw-bold w-100 py-2 rounded-3">
+                            Explore Baking Recipes →
+                        </Link>
+                        </div>
                     </div>
-                    {/* main heading and little text below */}
-                    <h3 className="fw-bold mb-2">Sweet & Oven Bakes</h3>
-                    <p className="text-muted mb-4">
-                        Indulge in artisanal breads, fluffy cakes, cookies, and perfect oven-baked delights.
-                    </p>
-                </div>
-                {/* react router link that takes user to baking page */}
-                <Link to="/baking" className="btn btn-primary fw-bold w-100 py-2 rounded-3">
-                    Explore Baking Recipes →
-                </Link>
                 </div>
             </div>
-            </div>
-        </div>
         <RecipeOfTheDay />
         </div>
     );

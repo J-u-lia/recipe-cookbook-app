@@ -1,6 +1,12 @@
 /* Cooking Page Styles */
+
 .cooking-hero {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(
+    135deg,
+    #dfeadf 0%,
+    #d4e4d5 100%
+  );
+  color: #5f4939;
 }
 
 .recipe-card {
@@ -10,7 +16,7 @@
 
 .recipe-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 10px 20px rgba(90, 70, 55, 0.12) !important;
 }
 
 .recipe-card-img {
@@ -26,4 +32,30 @@
   justify-content: center;
   border-radius: 50%;
   font-weight: bold;
+}
+
+/* Cooking category buttons */
+
+.cooking-category {
+  background-color: #c8ad96 !important;
+  color: #5f4939 !important;
+  border: 1px solid #c8ad96 !important;
+}
+
+.cooking-category:hover {
+  background-color: #b8957b !important;
+  border-color: #b8957b !important;
+  color: #ffffff !important;
+}
+
+/* Stove & Pan */
+
+.cooking-accent {
+  color: #705848 !important;
+}
+
+.cooking-category-small {
+  background-color: #c8ad96 !important;
+  color: #5f4939 !important;
+  border: 1px solid #c8ad96 !important;
 }

@@ -1,7 +1,7 @@
 // follows similar strucutr to cooking screen
 //IMPORTS
 import { useState, useEffect } from 'react';    // import again useState and useEffect the react hooks
-import { Cake, Search, Cookie, Sparkles, Scale, CheckSquare, Square, Users, Minus, Plus, Heart } from 'lucide-react';  // icons from lucide
+import { Cake, Search, Cookie, Sparkles, Scale, CheckSquare, Square, Users, Minus, Plus, Heart, Eye } from 'lucide-react';  // icons from lucide
 import './Baking.css';  // style sheet
 // helper function for cookbook
 import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
@@ -132,7 +132,7 @@ function Baking() {
         // an outer container for the page with css style and padding at bottom
         <div className="baking-page pb-5">
             {/* HERO BANNER with the icon cake and a little heading and text*/}
-            <div className="baking-hero text-white p-4 rounded-4 mb-4 shadow-sm d-flex align-items-center justify-content-between">
+            <div className="baking-hero p-4 rounded-4 mb-4 shadow-sm d-flex align-items-center justify-content-between">
                 <div>
                     <div className="d-flex align-items-center gap-2 fw-bold text-uppercase small mb-1 opacity-90">
                         <Cake size={20} /> Oven, Pastries & Sweet Treats
@@ -153,7 +153,7 @@ function Baking() {
                         key={cat}
                         onClick={() => setCategoryFilter(cat)}
                         className={`btn rounded-pill px-4 py-2 fw-semibold border-0 ${
-                            categoryFilter === cat ? 'btn-primary shadow-sm' : 'btn-light text-dark'
+                            categoryFilter === cat ? 'baking-category shadow-sm' : 'btn-light text-dark'
                         }`}
                     >
                         {cat === 'Dessert' ? 'Sweets & Desserts' : cat === 'Breakfast' ? 'Pancakes & Pastries' : 'Breads & Sides'}
@@ -187,7 +187,7 @@ function Baking() {
                                 <img src={meal.strMealThumb} alt={meal.strMeal} className="card-img-top baking-card-img" />
                                 <div className="card-body d-flex flex-column justify-content-between p-3">
                                     <div>
-                                        <span className="badge bg-primary-subtle text-primary-emphasis mb-2">
+                                        <span className="badge baking-category-small mb-2">
                                             {categoryFilter}
                                         </span>
                                         <h5 className="card-title fw-bold text-truncate" title={meal.strMeal}>
@@ -196,9 +196,9 @@ function Baking() {
                                     </div>
                                     <button
                                         onClick={() => fetchRecipeDetails(meal.idMeal)}
-                                        className="btn btn-outline-primary btn-sm fw-semibold w-100 rounded-3 mt-3"
+                                        className="btn btn-outline-dark btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
                                     >
-                                        View Recipe
+                                        <Eye size={16} /> View Recipe
                                     </button>
                                 </div>
                             </div>
@@ -283,7 +283,7 @@ function Baking() {
                                 {/* Category / Area / Tags */}
                                 <div className="d-flex flex-wrap gap-2 mb-4">
                                     {selectedRecipe.strCategory && (
-                                        <span className="badge bg-warning text-dark">
+                                        <span className="badge baking-category-small text-dark">
                                             {selectedRecipe.strCategory}
                                         </span>
                                     )}

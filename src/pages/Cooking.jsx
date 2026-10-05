@@ -5,7 +5,7 @@
 // with useState React remembers Information that changes, useEffect is for runnging a code when sth happens in the component
 import { useState, useEffect } from 'react';
 // import icons from lucide react
-import { Search, Flame, Clock, Users, Plus, Minus, CheckSquare, Square, Heart } from 'lucide-react';
+import { Search, Flame, Clock, Users, Plus, Minus, CheckSquare, Square, Heart, Eye } from 'lucide-react';
 import './Cooking.css'; // import .css file for styling
 // helper function for cookbook
 import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
@@ -149,7 +149,7 @@ function Cooking() {
         // main page container with css class and bottom padding
         <div className="cooking-page pb-5">
             {/* Page Header with css class and bootstrapp classes*/}
-            <div className="cooking-hero text-white p-4 rounded-4 mb-4 shadow-sm d-flex align-items-center justify-content-between">
+            <div className="cooking-hero p-4 rounded-4 mb-4 shadow-sm d-flex align-items-center justify-content-between">
                 <div>
                     <div className="d-flex align-items-center gap-2 fw-bold text-uppercase small mb-1 opacity-90">
                         {/* dsplays flame icon from lucide in 20 pixle size inside a flexcontainer */}
@@ -177,8 +177,8 @@ function Cooking() {
                         onClick={() => handleCategoryChange(cat)}
                         className={`btn rounded-pill px-4 py-2 fw-semibold border-0 ${
                             categoryFilter === cat
-                                 ? 'btn-warning text-dark shadow-sm'
-                                 : 'btn-light text-dark'
+                                 ? 'cooking-category'
+                                 : 'btn-light'
                         }`}
                     >
                         {cat} Dishes
@@ -211,7 +211,7 @@ function Cooking() {
                                 <img src={meal.strMealThumb} alt={meal.strMeal} className="card-img-top recipe-card-img" />
                                 <div className="card-body d-flex flex-column justify-content-between p-3">
                                     <div>
-                                        <span className="badge bg-warning-subtle text-warning-emphasis mb-2">
+                                        <span className="badge cooking-category-small mb-2">
                                             {categoryFilter}
                                         </span>
                                         <h5 className="card-title fw-bold text-truncate" title={meal.strMeal}>
@@ -222,9 +222,10 @@ function Cooking() {
                                     so if API says strMeal ="Bolognese" then react diplays Bolognese and then the ID = 123 is get and then fetchRecipeDetails(123) is running which makes an API request which get the Full recipe as Modal */}
                                     <button
                                         onClick={() => fetchRecipeDetails(meal.idMeal)}
-                                        className="btn btn-outline-dark btn-sm fw-semibold w-100 rounded-3 mt-3"
+                                        className="btn btn-outline-dark btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
                                     >
-                                        View Recipe                                    </button>
+                                        <Eye size={16} /> View Recipe
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -300,7 +301,7 @@ function Cooking() {
                                 {/* Category and origin */}
                                 <div className="d-flex flex-wrap gap-2 mb-4">
                                     {selectedRecipe.strCategory && (
-                                        <span className="badge bg-warning text-dark">
+                                        <span className="badge cooking-category-small text-dark">
                                             {selectedRecipe.strCategory}
                                         </span>
                                     )}

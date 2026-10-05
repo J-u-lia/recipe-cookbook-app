@@ -1,16 +1,23 @@
 /* Baking Page Custom Styles */
+
 .baking-hero {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(
+    135deg,
+    #e8e0f2 0%,
+    #ddd2eb 100%
+  );
+  color: #405d6d;
 }
 
 .baking-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: none;
+  border: 1px solid #ebe6e1;
+  background: #ffffff;
 }
 
 .baking-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15) !important;
+  box-shadow: 0 10px 24px rgba(105, 85, 125, 0.1) !important;
 }
 
 .baking-card-img {
@@ -18,7 +25,36 @@
   object-fit: cover;
 }
 
+/* Baking conversion box */
+
 .converter-box {
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background-color: #f5f0f9;
+  border: 1px solid #ddd2e8;
+  color: #405d6d;
+}
+
+/* Oven & Bakery */
+
+.baking-accent {
+  color: #405d6d !important;
+}
+
+/* Baking category buttons */
+
+.baking-category {
+  background-color: #a9c7d8 !important;
+  color: #405d6d !important;
+  border: 1px solid #a9c7d8 !important;
+}
+
+.baking-category:hover {
+  background-color: #8eafc2 !important;
+  border-color: #8eafc2 !important;
+  color: #ffffff !important;
+}
+
+.baking-category-small {
+  background-color: #a9c7d8 !important;
+  color: #405d6d !important;
+  border: 1px solid #a9c7d8 !important;
 }

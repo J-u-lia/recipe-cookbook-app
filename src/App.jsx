@@ -28,7 +28,7 @@ function App() {
   return (
     <BrowserRouter> {/* wraps everything in React BrowserRouter System to keep track which component should be displayed */}
       {/* Navigation Bar with Bootstrap classes: a navigation bar, should expland, dark background, navbar suitable for dark background, margin-bottom level 4*/}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+      <nav className="navbar navbar-expand-lg recipy-navbar mb-4">
         <div className="container">
           {/* clicking RecipeHub gets you to the Home screen */}
           <Link className="navbar-brand fw-bold d-flex align-items-center gap-2" to="/">

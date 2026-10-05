@@ -133,7 +133,7 @@ function RecipeOfTheDay() {
 
                     {/* Recipe card */}
                     {!loading && recipeOfDay && (
-                        <div className="card shadow-sm border-0 mx-auto text-center" style={{ maxWidth: '600px' }}>
+                        <div className="card recipe-of-day-card shadow-sm border-0 mx-auto text-center" style={{ maxWidth: '600px' }}>
                             <div className="card-body p-4">
 
                                 <h3 className="card-title mb-3">
