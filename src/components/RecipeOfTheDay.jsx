@@ -133,94 +133,44 @@ function RecipeOfTheDay() {
 
                     {/* Recipe card */}
                     {!loading && recipeOfDay && (
-                    <div className="card shadow-sm border-0 overflow-hidden">
-                        <div className="row g-0">
-                            {/* Recipe image */}
-                            <div className="col-md-5">
+                        <div className="card shadow-sm border-0 mx-auto text-center" style={{ maxWidth: '600px' }}>
+                            <div className="card-body p-4">
+
+                                <h3 className="card-title mb-3">
+                                    {recipeOfDay.strMeal}
+                                </h3>
+
                                 <img
-                                src={recipeOfDay.strMealThumb}
-                                alt={recipeOfDay.strMeal}
-                                className="img-fluid w-100 h-100"
-                                style={{
-                                    objectFit: 'cover',
-                                    minHeight: '400px',
-                                }}
+                                    src={recipeOfDay.strMealThumb}
+                                    alt={recipeOfDay.strMeal}
+                                    className="img-fluid rounded-3 mb-3"
+                                    style={{ maxHeight: '300px', objectFit: 'contain' }}
                                 />
-                            </div>
 
-                            {/* Recipe information */}
-                            <div className="col-md-7">
-                                <div className="card-body p-4">
-                                    {/* Category and area */}
-                                    <div className="d-flex flex-wrap gap-2 mb-3">
-                                        {recipeOfDay.strCategory && (
-                                            <span className="badge bg-warning text-dark">
-                                                {recipeOfDay.strCategory}
-                                            </span>
-                                        )}
+                                <div className="d-flex justify-content-center align-items-center gap-4 mb-4">
+                                    {recipeOfDay.strCategory && (
+                                        <span className="badge bg-warning text-dark">
+                                            {recipeOfDay.strCategory}
+                                        </span>
+                                    )}
 
-                                        {recipeOfDay.strArea && (
-                                            <span className="badge bg-light text-dark border">
-                                                {recipeOfDay.strArea}
-                                            </span>
-                                        )}
+                                    <div className="d-flex align-items-center gap-2">
+                                        <Globe size={18} />
+                                        <span>
+                                            {recipeOfDay.strArea || 'International'}
+                                        </span>
                                     </div>
-                                    {/* Recipe name */}
-                                    <h3 className="card-title mb-3">{recipeOfDay.strMeal}</h3>
-                                    {/* Key ingredients */}
-                                    <h5 className="mb-3">Key Ingredients</h5>
-
-                                    <div className="d-flex flex-wrap gap-2 mb-4">
-                                        {getIngredientsList(recipeOfDay)
-                                            .slice(0, 6)
-                                            .map((item, index) => (
-                                                <span
-                                                    key={index}
-                                                    className="badge bg-light text-dark border"
-                                                >
-                                                    {item.ingredient}
-                                                </span>
-                                            ))}
-
-                                        {getIngredientsList(recipeOfDay).length > 6 && (
-                                            <span className="badge bg-secondary">
-                                                +
-                                                {getIngredientsList(recipeOfDay).length - 6}
-                                                {' '}more
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Recipe information */}
-                                    <div className="row mb-4">
-                                        {/* Cooking time */}
-                                        <div className="col-sm-6 mb-2">
-                                            <div className="d-flex align-items-center gap-2">
-                                                <Clock size={20} />
-                                                <span>
-                                                    Ready to cook
-                                                </span>
-                                            </div>
-                                        </div>
-                                        {/* Origin */}
-                                        <div className="col-sm-6 mb-2">
-                                            <div className="d-flex align-items-center gap-2">
-                                                <Globe size={20} />
-                                                <span>
-                                                    {recipeOfDay.strArea || 'International'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* View recipe button */}
-                                    <button className="btn btn-warning" onClick={() => setShowModal(true)}>
-                                        View Full Recipe
-                                    </button>
                                 </div>
+
+                                <button
+                                    className="btn btn-warning px-4"
+                                    onClick={() => setShowModal(true)}
+                                >
+                                    View Recipe
+                                </button>
+
                             </div>
                         </div>
-                    </div>
                     )}
 
                     {/* Error / no recipe state */}
