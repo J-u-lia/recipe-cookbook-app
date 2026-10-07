@@ -34,9 +34,9 @@ The application uses the TheMealDB API to retrieve recipe information and stores
 Make sure you have Node.js and npm installed on your computer.
 
 You can check your versions with:
-- ```bash
-- node -v
-- npm -v
+```bash
+node -v
+npm -v
 
 ### Installation
 1. Clone the repository
@@ -58,8 +58,10 @@ To create a production build, run 'npm run build'. To preview the production bui
 
 ## Project structure
 
+```text
 recipe-cookbook-app/
 ├── public/
+│
 ├── src/
 │   ├── assets/
 │   │
@@ -92,6 +94,7 @@ recipe-cookbook-app/
 ├── package-lock.json
 ├── vite.config.js
 └── README.md
+```
 
 ## API
 Recipe data is provided by TheMealDB.
