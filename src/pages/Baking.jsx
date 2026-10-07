@@ -401,74 +401,86 @@ function Baking() {
                                 </div>
 
 
-                                {/* INGREDIENTS CHECKLIST */}
-                                <h5 className="fw-bold mb-3">
-                                    Ingredients Checklist
-                                </h5>
+                                {/* INGREDIENTS + BAKING INSTRUCTIONS */}
+                                <div className="row g-4">
 
-                                <ul className="list-group list-group-flush mb-4">
+                                    {/* INGREDIENT CHECKLIST */}
+                                    <div className="col-md-5">
+                                        <h5 className="fw-bold mb-3">
+                                            Ingredients Checklist
+                                        </h5>
 
-                                    {getIngredientsList(selectedRecipe).map(
-                                        (item, index) => {
+                                        <ul className="list-group list-group-flush mb-4">
 
-                                            const displayMeasure = scaleMeasure(
-                                                item.measure,
-                                                servings,
-                                                4
-                                            );
+                                            {getIngredientsList(selectedRecipe).map(
+                                                (item, index) => {
 
-                                            return (
-                                                <li
-                                                    key={index}
-                                                    onClick={() =>
-                                                        toggleIngredientCheck(index)
-                                                    }
-                                                    className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
-                                                    style={{ cursor: 'pointer' }}
-                                                >
+                                                    const displayMeasure = scaleMeasure(
+                                                        item.measure,
+                                                        servings,
+                                                        4
+                                                    );
 
-                                                    {/* CHECKBOX */}
-                                                    {checkedIngredients[index] ? (
-                                                        <CheckSquare
-                                                            size={20}
-                                                            className="text-success flex-shrink-0"
-                                                        />
-                                                    ) : (
-                                                        <Square
-                                                            size={20}
-                                                            className="text-muted flex-shrink-0"
-                                                        />
-                                                    )}
+                                                    return (
+                                                        <li
+                                                            key={index}
+                                                            onClick={() =>
+                                                                toggleIngredientCheck(index)
+                                                            }
+                                                            className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
+                                                            style={{ cursor: 'pointer' }}
+                                                        >
 
-                                                    {/* INGREDIENT */}
-                                                    <span
-                                                        className={
-                                                            checkedIngredients[index]
-                                                                ? 'text-decoration-line-through text-muted'
-                                                                : ''
-                                                        }
-                                                    >
-                                                        <strong>
-                                                            {displayMeasure}
-                                                        </strong>{' '}
-                                                        {item.ingredient}
-                                                    </span>
+                                                            {/* CHECKBOX */}
+                                                            {checkedIngredients[index] ? (
+                                                                <CheckSquare
+                                                                    size={20}
+                                                                    className="text-success flex-shrink-0"
+                                                                />
+                                                            ) : (
+                                                                <Square
+                                                                    size={20}
+                                                                    className="text-muted flex-shrink-0"
+                                                                />
+                                                            )}
 
-                                                </li>
-                                            );
-                                    })}
+                                                            {/* INGREDIENT */}
+                                                            <span
+                                                                className={
+                                                                    checkedIngredients[index]
+                                                                        ? 'text-decoration-line-through text-muted'
+                                                                        : ''
+                                                                }
+                                                            >
+                                                                <strong>
+                                                                    {displayMeasure}
+                                                                </strong>{' '}
+                                                                {item.ingredient}
+                                                            </span>
 
-                                </ul>
+                                                        </li>
+                                                    );
+                                                }
+                                            )}
 
+                                        </ul>
+                                    </div>
 
-                                {/* BAKING INSTRUCTIONS */}
-                                <h5 className="fw-bold mb-2">
-                                    Baking Instructions
-                                </h5>
+                                    {/* BAKING INSTRUCTIONS */}
+                                    <div className="col-md-7">
+                                        <h5 className="fw-bold mb-3">
+                                            Baking Instructions
+                                        </h5>
 
-                                <p className="text-secondary lh-lg whitespace-pre-line">
-                                    {selectedRecipe.strInstructions}
-                                </p>
+                                        <p
+                                            className="text-secondary lh-lg"
+                                            style={{ whiteSpace: 'pre-line' }}
+                                        >
+                                            {selectedRecipe.strInstructions}
+                                        </p>
+                                    </div>
+
+                                </div>
 
                             </div>
 
