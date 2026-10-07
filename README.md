@@ -41,10 +41,8 @@ npm -v
 
 ### Installation
 1. Clone the repository
-git clone 
-
 ```bash
-https://github.com/J-u-lia/recipe-cookbook-app.git
+git clone https://github.com/J-u-lia/recipe-cookbook-app.git
 ```
 
 2. Move into the project folder
