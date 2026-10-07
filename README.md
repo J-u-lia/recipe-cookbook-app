@@ -37,19 +37,31 @@ You can check your versions with:
 ```bash
 node -v
 npm -v
+```
 
 ### Installation
 1. Clone the repository
-git clone https://github.com/J-u-lia/recipe-cookbook-app.git
+git clone 
+
+```bash
+https://github.com/J-u-lia/recipe-cookbook-app.git
+```
 
 2. Move into the project folder
+```bash
 cd recipe-cookbook-app
+```
 
 3. Install the project dependencies
+```bash
 npm install
+```
 
 ### Start the development server
-- run: npm run dev
+- run: 
+```bash
+npm run dev
+```
 
 Vite will start the development server and provide a local URL. Open this URL in your browser to use Recipy.
 
