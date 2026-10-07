@@ -75,3 +75,13 @@
   color: #624d5a !important;
   border: 1px solid #c9a9b5 !important;
 }
+
+.recipe-detail-img {
+  width: 100%;
+  max-width: 600px;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto;
+}

@@ -242,14 +242,14 @@ function MyCookbook() {
                                 className="btn cookbook-action rounded-pill px-4 fw-semibold d-flex align-items-center gap-2"
                             >
                                 <PlusCircle size={18} />
-                                Add My Recipe
+                                Add a Recipe
                             </button>
                         )}
 
                         {filteredRecipes.length > 0 && (
                             <button
                                 onClick={clearCurrentSection}
-                                className="btn btn-outline-danger rounded-pill px-3 fw-semibold"
+                                className="btn btn-outline-danger rounded-pill px-3 fw-semibold d-flex align-items-center gap-2"
                             >
                                 <Trash2 size={16} />
                                 Clear {cookbookSection === 'liked' ? 'Liked' : 'My'} Recipes
@@ -293,7 +293,7 @@ function MyCookbook() {
                                 className="btn btn-primary rounded-pill px-4 fw-semibold"
                             >
                                 <PlusCircle size={18} className="me-1" />
-                                Add My Recipe
+                                Add a Recipe
                             </button>
                         </>
                     )}
@@ -377,102 +377,200 @@ function MyCookbook() {
                             {/* load the image of the clicked recipe */}
                             <div className="modal-body p-4">
                                 <div className="row g-4 mb-4">
+
+                                    {/* LEFT SIDE - RECIPE IMAGE */}
                                     <div className="col-md-5">
                                         <img
                                             src={selectedRecipe.strMealThumb}
                                             alt={selectedRecipe.strMeal}
-                                            className="img-fluid rounded-4 shadow-sm w-100"
+                                            className="recipe-detail-img img-fluid rounded-4 shadow-sm w-100"
                                         />
                                     </div>
-                                    {/* next to image it depends which category the recipe is in but either the portion scaling is displayed or the portion scaling and the unit converter */}
+
+                                    {/* RIGHT SIDE - SERVING SIZE */}
                                     <div className="col-md-7">
-                                        {/* check if the category is baking or dessert because then both need to be there */}
+
+                                        {/* Baking/Dessert gets Baking Batch Size */}
                                         {selectedRecipe.strCategory?.toLowerCase() === 'baking' ||
-                                         selectedRecipe.strCategory?.toLowerCase() === 'dessert' ? (
+                                        selectedRecipe.strCategory?.toLowerCase() === 'dessert' ? (
+
                                             <div className="p-3 bg-light rounded-4 border mb-3">
-                                                {/* Portion Scaler */}
-                                                <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+
+                                                <div className="d-flex align-items-center justify-content-between">
+
                                                     <div className="d-flex align-items-center gap-2">
                                                         <Users size={20} className="text-primary" />
-                                                        <span className="fw-bold">Baking Batch Size:</span>
+                                                        <span className="fw-bold">
+                                                            Baking Batch Size:
+                                                        </span>
                                                     </div>
+
                                                     <div className="d-flex align-items-center gap-2">
+
                                                         <button
-                                                            onClick={() => setServings((prev) => Math.max(1, prev - 1))}
+                                                            onClick={() =>
+                                                                setServings((prev) => Math.max(1, prev - 1))
+                                                            }
                                                             className="btn btn-outline-dark serving-btn"
                                                         >
                                                             <Minus size={16} />
                                                         </button>
-                                                        <span className="fw-bold fs-5 px-2">{servings} servings</span>
+
+                                                        <span className="fw-bold fs-5 px-2">
+                                                            {servings} servings
+                                                        </span>
+
                                                         <button
-                                                            onClick={() => setServings((prev) => prev + 1)}
+                                                            onClick={() =>
+                                                                setServings((prev) => prev + 1)
+                                                            }
                                                             className="btn btn-outline-dark serving-btn"
                                                         >
                                                             <Plus size={16} />
                                                         </button>
+
                                                     </div>
+
                                                 </div>
 
-                                                {/* Conversions */}
-                                                <div className="p-3 bg-light rounded-3 border text-dark small">
-                                                    <h6 className="fw-bold mb-2">Kitchen Conversions at a Glance</h6>
-                                                    <div className="row g-2">
-                                                        <div className="col-12 col-md-6">
-                                                            <strong>Weight & Volume:</strong>
-                                                            <ul className="mb-0 ps-3">
-                                                                <li>1 oz (Weight) = <strong>28,35 g</strong></li>
-                                                                <li>1 fl oz (Liquid) = <strong>29,6 ml</strong></li>
-                                                                <li>1 Cup (Liquid) = <strong>240 ml</strong></li>
-                                                            </ul>
-                                                        </div>
-                                                        <div className="col-12 col-md-6">
-                                                            <strong>1 Cup equals:</strong>
-                                                            <ul className="mb-0 ps-3">
-                                                                <li>Flour = <strong>125 g</strong></li>
-                                                                <li>Sugar = <strong>200 g</strong></li>
-                                                                <li>Butter / Cream Cheese = <strong>225–227 g</strong></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
                                             </div>
+
                                         ) : (
-                                            /* if not baking or dessert then the category is cooking so then only the portion scaling */
+
+                                            /* Cooking recipes only get normal Serving Size */
                                             <div className="p-3 bg-light rounded-4 border mb-3">
+
                                                 <div className="d-flex align-items-center justify-content-between">
+
                                                     <div className="d-flex align-items-center gap-2">
                                                         <Users size={20} className="text-primary" />
-                                                        <span className="fw-bold">Serving Size:</span>
+                                                        <span className="fw-bold">
+                                                            Serving Size:
+                                                        </span>
                                                     </div>
+
                                                     <div className="d-flex align-items-center gap-2">
+
                                                         <button
-                                                            onClick={() => setServings((prev) => Math.max(1, prev - 1))}
+                                                            onClick={() =>
+                                                                setServings((prev) => Math.max(1, prev - 1))
+                                                            }
                                                             className="btn btn-outline-dark serving-btn"
                                                         >
                                                             <Minus size={16} />
                                                         </button>
-                                                        <span className="fw-bold fs-5 px-2">{servings} servings</span>
+
+                                                        <span className="fw-bold fs-5 px-2">
+                                                            {servings} servings
+                                                        </span>
+
                                                         <button
-                                                            onClick={() => setServings((prev) => prev + 1)}
+                                                            onClick={() =>
+                                                                setServings((prev) => prev + 1)
+                                                            }
                                                             className="btn btn-outline-dark serving-btn"
                                                         >
                                                             <Plus size={16} />
                                                         </button>
+
                                                     </div>
+
                                                 </div>
+
                                             </div>
                                         )}
-                                        {/* display category and origin from recipe below that */}
+
+                                        {/* CATEGORY AND ORIGIN */}
                                         <div className="d-flex gap-2">
+
                                             <span className="badge cookbook-category-small px-3 py-2">
                                                 Category: {selectedRecipe.strCategory || 'General'}
                                             </span>
+
                                             <span className="badge bg-secondary-subtle text-secondary px-3 py-2">
                                                 Origin: {selectedRecipe.strArea || 'International'}
                                             </span>
+
                                         </div>
+
                                     </div>
                                 </div>
+
+
+                                {/* FULL WIDTH BLUE CONVERSION BOX */}
+                                {(
+                                    selectedRecipe.strCategory?.toLowerCase() === 'baking' ||
+                                    selectedRecipe.strCategory?.toLowerCase() === 'dessert'
+                                ) && (
+
+                                    <div className="alert alert-info rounded-4 mb-4">
+
+                                        <h5 className="mb-3 fw-bold">
+                                            Kitchen Conversions at a Glance
+                                        </h5>
+
+                                        <div className="row g-3">
+
+                                            {/* WEIGHT & VOLUME */}
+                                            <div className="col-12 col-md-6">
+
+                                                <strong>
+                                                    Weight &amp; Volume
+                                                </strong>
+
+                                                <ul className="mb-0 mt-2 ps-3">
+
+                                                    <li>
+                                                        1 oz (Weight) =
+                                                        <strong> 28.35 g</strong>
+                                                    </li>
+
+                                                    <li>
+                                                        1 fl oz (Liquid) =
+                                                        <strong> 29.6 ml</strong>
+                                                    </li>
+
+                                                    <li>
+                                                        1 cup (Liquid) =
+                                                        <strong> 240 ml</strong>
+                                                    </li>
+
+                                                </ul>
+
+                                            </div>
+
+                                            {/* CUP CONVERSIONS */}
+                                            <div className="col-12 col-md-6">
+
+                                                <strong>
+                                                    1 Cup equals
+                                                </strong>
+
+                                                <ul className="mb-0 mt-2 ps-3">
+
+                                                    <li>
+                                                        Flour =
+                                                        <strong> 125 g</strong>
+                                                    </li>
+
+                                                    <li>
+                                                        Sugar =
+                                                        <strong> 200 g</strong>
+                                                    </li>
+
+                                                    <li>
+                                                        Butter / Cream Cheese =
+                                                        <strong> 225–227 g</strong>
+                                                    </li>
+
+                                                </ul>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                )}
 
                                 {/* INGREDIENTS CHECKLIST 
                                         first header and then the list
