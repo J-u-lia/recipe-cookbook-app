@@ -7,7 +7,7 @@
   Route - defines one URL and what should appear when this URL is pressed
   Link - used for navigation, creates sth that user can click and sth will happen when clicked */}
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom';
 import { ChefHat } from 'lucide-react';
 {/* Page imports */}
 import Home from './pages/Home';
@@ -38,10 +38,41 @@ function App() {
           {/*<ChefHat size={48} className="mb-3 text-warning" />*/}
           <div className="navbar-nav">
             {/* these are the links in the navigation bar - link tells you where you will go */}
-            <Link className="nav-link" to="/">Home</Link>
-            <Link className="nav-link" to="/cooking">Stove & Pan</Link>
-            <Link className="nav-link" to="/baking">Oven & Bakery</Link>
-            <Link className="nav-link" to="/my-cookbook">My Cookbook</Link>
+            <NavLink
+              className={({ isActive }) =>
+                `nav-link ${isActive ? 'active' : ''}`
+              }
+              to="/"
+            >
+              Home
+            </NavLink>
+
+            <NavLink
+              className={({ isActive }) =>
+                `nav-link ${isActive ? 'active' : ''}`
+              }
+              to="/cooking"
+            >
+              Stove & Pan
+            </NavLink>
+
+            <NavLink
+              className={({ isActive }) =>
+                `nav-link ${isActive ? 'active' : ''}`
+              }
+              to="/baking"
+            >
+              Oven & Bakery
+            </NavLink>
+
+            <NavLink
+              className={({ isActive }) =>
+                `nav-link ${isActive ? 'active' : ''}`
+              }
+              to="/my-cookbook"
+            >
+              My Cookbook
+            </NavLink>
           </div>
         </div>
       </nav>

@@ -156,6 +156,12 @@ p {
   transform: translateY(-1px);
 }
 
+.recipy-navbar .nav-link.active {
+  background-color: #c8ad96 !important;
+  color: #4f3f34 !important;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 1024px) {
   h1 {
     font-size: 36px;
