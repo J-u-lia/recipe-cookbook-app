@@ -3,7 +3,7 @@
 // IMPORTS
 import { useState, useEffect } from 'react';    // react hooks to remember information that can change and that react can perform sth as a side effect
 import { Bookmark, Heart, Trash2, Eye, Users, Minus, Plus, CheckSquare, Square, PlusCircle } from 'lucide-react';   // icons
-import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';  //helper functions
+import { scaleMeasure } from '../utils/cookbookHelper';  //helper functions
 import AddRecipeModal from '../components/AddRecipeModal';
 import './MyCookbook.css';
 
@@ -479,23 +479,27 @@ function MyCookbook() {
                                         then the logic for making box checked or just normal square*/}
                                 <h5 className="fw-bold mb-3">Ingredients Checklist</h5>
                                 <ul className="list-group list-group-flush mb-4">
-                                    {getIngredientsList(selectedRecipe).map((item, index) => (
-                                        <li
-                                            key={index}
-                                            onClick={() => toggleIngredientCheck(index)}
-                                            className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            {checkedIngredients[index] ? (
-                                                <CheckSquare size={20} className="text-success" />
-                                            ) : (
-                                                <Square size={20} className="text-muted" />
-                                            )}
-                                            <span className={checkedIngredients[index] ? 'text-decoration-line-through text-muted' : ''}>
-                                                <strong>{item.measure}</strong> {item.ingredient}
-                                            </span>
-                                        </li>
-                                    ))}
+                                    {getIngredientsList(selectedRecipe).map((item, index) => {
+                                        const displayMeasure = scaleMeasure(item.measure, servings, 4);
+                                        
+                                        return(
+                                            <li
+                                                key={index}
+                                                onClick={() => toggleIngredientCheck(index)}
+                                                className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                {checkedIngredients[index] ? (
+                                                    <CheckSquare size={20} className="text-success" />
+                                                ) : (
+                                                    <Square size={20} className="text-muted" />
+                                                )}
+                                                <span className={checkedIngredients[index] ? 'text-decoration-line-through text-muted' : ''}>
+                                                    <strong>{displayMeasure}</strong> {item.ingredient}
+                                                </span>
+                                            </li>
+                                        );
+                                    })}
                                 </ul>
 
                                 {/* INSTRUCTIONS */}

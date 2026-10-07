@@ -5,11 +5,12 @@
 // with useState React remembers Information that changes, useEffect is for runnging a code when sth happens in the component
 import { useState, useEffect } from 'react';
 // import icons from lucide react
-import { Search, Flame, Clock, Users, Plus, Minus, CheckSquare, Square, Heart, Eye } from 'lucide-react';
+import { Flame, Users, Plus, Minus, CheckSquare, Square, Heart, Eye } from 'lucide-react';
 import './Cooking.css'; // import .css file for styling
 // helper function for cookbook
-import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
+import { toggleSaveRecipe, isRecipeSaved, scaleMeasure } from '../utils/cookbookHelper';
 import { useSearchParams } from 'react-router-dom';
+
 
 // component called Cooking
 function Cooking() {
@@ -377,45 +378,48 @@ function Cooking() {
 
                                     <div className="list-group">
                                         {getIngredientsList(selectedRecipe).map(
-                                            (item, index) => (
-                                                <button
-                                                    key={index}
-                                                    type="button"
-                                                    className="list-group-item list-group-item-action d-flex align-items-center gap-3"
-                                                    onClick={() =>
-                                                        toggleIngredientCheck(index)
-                                                    }
-                                                >
-
-                                                    {/* Checkbox icon */}
-                                                    {checkedIngredients[index] ? (
-                                                        <CheckSquare
-                                                            size={20}
-                                                            className="text-success flex-shrink-0"
-                                                        />
-                                                    ) : (
-                                                        <Square
-                                                            size={20}
-                                                            className="text-muted flex-shrink-0"
-                                                        />
-                                                    )}
-
-                                                    {/* Ingredient text */}
-                                                    <span
-                                                        className={
-                                                            checkedIngredients[index]
-                                                                ? 'text-decoration-line-through text-muted'
-                                                                : ''
+                                            (item, index) => {
+                                                const displayMeasure = scaleMeasure(item.measure, servings, 4);
+                                                return(
+                                                    <button
+                                                        key={index}
+                                                        type="button"
+                                                        className="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                                                        onClick={() =>
+                                                            toggleIngredientCheck(index)
                                                         }
                                                     >
-                                                        <strong>
-                                                            {item.measure}
-                                                        </strong>{' '}
-                                                        {item.ingredient}
-                                                    </span>
 
-                                                </button>
-                                            )
+                                                        {/* Checkbox icon */}
+                                                        {checkedIngredients[index] ? (
+                                                            <CheckSquare
+                                                                size={20}
+                                                                className="text-success flex-shrink-0"
+                                                            />
+                                                        ) : (
+                                                            <Square
+                                                                size={20}
+                                                                className="text-muted flex-shrink-0"
+                                                            />
+                                                        )}
+
+                                                        {/* Ingredient text */}
+                                                        <span
+                                                            className={
+                                                                checkedIngredients[index]
+                                                                    ? 'text-decoration-line-through text-muted'
+                                                                    : ''
+                                                            }
+                                                        >
+                                                            <strong>
+                                                                {displayMeasure}
+                                                            </strong>{' '}
+                                                            {item.ingredient}
+                                                        </span>
+
+                                                    </button>
+                                                );
+                                            }
                                         )}
                                     </div>
                                 </div>

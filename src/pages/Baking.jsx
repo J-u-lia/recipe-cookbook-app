@@ -1,10 +1,10 @@
 // follows similar strucutr to cooking screen
 //IMPORTS
 import { useState, useEffect } from 'react';    // import again useState and useEffect the react hooks
-import { Cake, Search, Cookie, Sparkles, Scale, CheckSquare, Square, Users, Minus, Plus, Heart, Eye } from 'lucide-react';  // icons from lucide
+import { Cake, CheckSquare, Square, Users, Minus, Plus, Heart, Eye } from 'lucide-react';  // icons from lucide
 import './Baking.css';  // style sheet
 // helper function for cookbook
-import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
+import { toggleSaveRecipe, isRecipeSaved, scaleMeasure } from '../utils/cookbookHelper';
 import { useSearchParams } from 'react-router-dom';
 
 // creating the React component Baking which can be displayed
@@ -404,39 +404,43 @@ function Baking() {
 
                                     <div className="list-group">
                                         {getIngredientsList(selectedRecipe).map(
-                                            (item, index) => (
-                                                <button
-                                                    key={index}
-                                                    type="button"
-                                                    className="list-group-item list-group-item-action d-flex align-items-center gap-3"
-                                                    onClick={() =>
-                                                        toggleIngredientCheck(index)
-                                                    }
-                                                >
-                                                    {checkedIngredients[index] ? (
-                                                        <CheckSquare
-                                                            size={20}
-                                                            className="text-success flex-shrink-0"
-                                                        />
-                                                    ) : (
-                                                        <Square
-                                                            size={20}
-                                                            className="text-muted flex-shrink-0"
-                                                        />
-                                                    )}
-
-                                                    <span
-                                                        className={
-                                                            checkedIngredients[index]
-                                                                ? "text-decoration-line-through text-muted"
-                                                                : ""
+                                            (item, index) => {
+                                                const displayMeasure = scaleMeasure(item.measure, servings, 4);
+                                                
+                                                return(
+                                                    <button
+                                                        key={index}
+                                                        type="button"
+                                                        className="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                                                        onClick={() =>
+                                                            toggleIngredientCheck(index)
                                                         }
                                                     >
-                                                        <strong>{item.measure}</strong>{" "}
-                                                        {item.ingredient}
-                                                    </span>
-                                                </button>
-                                            )
+                                                        {checkedIngredients[index] ? (
+                                                            <CheckSquare
+                                                                size={20}
+                                                                className="text-success flex-shrink-0"
+                                                            />
+                                                        ) : (
+                                                            <Square
+                                                                size={20}
+                                                                className="text-muted flex-shrink-0"
+                                                            />
+                                                        )}
+
+                                                        <span
+                                                            className={
+                                                                checkedIngredients[index]
+                                                                    ? "text-decoration-line-through text-muted"
+                                                                    : ""
+                                                            }
+                                                        >
+                                                            <strong>{displayMeasure}</strong>{" "}
+                                                            {item.ingredient}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            }
                                         )}
                                     </div>
                                 </div>

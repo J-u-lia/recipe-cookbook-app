@@ -81,3 +81,109 @@ export const saveCustomRecipe = (recipeData) => {
         return null;
     }
 };
+
+// 07.10.2026 measurements don't correspond with serving sizes
+// idea: scaled amount = (Original Amount/Base Servings) * Target S
+// problem: measurements are strings like "500 g" - therefore this function extracts the numeric part out of it and then scales this and leaves nonnumeric things alone
+
+// a JSDoc comment to write which data has what type - easier to write the function to not get confused
+// describes also the parameters the function needs and the type of value they return
+// @param describes the parameters and @return the return value 
+/**
+ * Scales ingredient measurement strings dynamically.
+ * @param {string} measure - e.g., "500 g", "1.5 cups", "1/2 tsp", "to taste"
+ * @param {number} currentServings - e.g., 8
+ * @param {number} baseServings - Default base servings (4)
+ * @returns {string} - Scaled measure string e.g., "1000 g"
+ */
+
+// creates the function (available for other files) in variable scaleMeasure which has parameters measure, currentServings and baseServing which are equal at the beginning
+// e.g scaleMeasure("1/2 cup", 8, 4) it takes the 1/2 cup and cleans the text to get 1/2 then it converts the 1/2 into 0.5 as decimal number then calculates the serving ratio 8/4 which is 2 then multiplies it so 0.5 times 2 is 1 and then puts them back tether to get 1 cup
+// measurements come from the API as strings, so function needs to convert the numeric part into a number before doing calculations.
+// JavaScript can calculate 1 / 2 normally, but "1/2" from the API is text, so JavaScript cannot treat it as a mathematical fraction automatically.
+export const scaleMeasure = (measure, currentServings = 4, baseServings = 4) => {
+    // the function should only be executed if the measure is not missing or empty or if the type of the measure is a string if this doesn't apply then dont execute it
+    if (!measure || typeof measure !== 'string') return measure || '';
+
+    // if there is space at the beginning and after .trim() got rid of it the measure is empty then the function also don't need to run
+    const trimmed = measure.trim();
+    if (!trimmed) return '';
+
+    // then the scaling ration needs to be calculated which is the number the measurements then gets multiplied 
+    // it is currentServings divided by baseServings if these are equal then the ration is 1 and then it doesn't need to be calculated
+    const ratio = currentServings / baseServings;
+    if (ratio === 1) return trimmed;
+
+    // regular expression = regex trys to find the number at the beginning of the measurement so the 500 in the 500g
+    // with the ^ it starts at the beginning of the string
+    // it needs to recognize three different possibilities:
+                // a number then a distance and then a fraction so 1 1/2
+                // just a fraaction like 1/2
+                // normal number and decimal numbers
+    // \d means a digit from 0-9
+    // and \d+ means one more digit
+    // \s is space
+    // the / btw \d+/\d+ is the fraction slash
+    // | means or
+    // so the first part \d+\s+\d+\/\d+ means:
+                // one digit then a space then a fraction
+    // the second part \d+\/\d+ ist just the fraction
+    // the third part \d+(?:\.\d+)?) is 
+                // one digit (so e.g 500 would match because it is a digit)
+                // and then perhaps (? means optional) a decimal point with a number behind
+    const amountRegex = /^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)/;
+    // then with the help of the regex the trimmed string is searched for these numbers
+    const match = trimmed.match(amountRegex);
+
+    // if it couldn find a number then it should stop the function because multiplying strings doesn't work (e.g., "to taste", "pinch")
+    if (!match) return trimmed; 
+    
+    // then the first thing that was found should be returned so the number without spaces
+    const rawAmount = match[0].trim();
+    // and then everything else like all the things after the number should be stored because after the calculations these units should still be the same
+    const restOfMeasure = trimmed.slice(rawAmount.length); // " g", " cups"
+
+    // a fraction needs to be converted into a decimal number to multiply
+    let numericValue = 0;   // in there the numerical value will be stored
+    // so if the number that was stored before includes a string / it is a fraction
+    if (rawAmount.includes('/')) {
+        // and then it should be splitted at the point where a space is so 1 1/2 would get "1", "1/2" to get two numbers
+        const parts = rawAmount.split(' ');
+        // if there are now two things so it was before a e.g 1 1/2 
+        if (parts.length === 2) {
+            // the first thing is the whole number and the second is the fraction
+            // these two should be seperated to get whole = "1" and frac = "1/2"
+            const [whole, frac] = parts;
+            // and then the fraction should be splitted into numerator and denominator so it would get num = "1" and den = "2"
+            const [num, den] = frac.split('/');
+            // then the fraction needs to be converted into a decimal number with parseFloat the strings are converted into a number
+            // so it adds the whole number to the num/den e.g 1 + 1/2 would get 1.5 so now it has his decimal number
+            numericValue = parseFloat(whole) + parseFloat(num) / parseFloat(den);
+        } else {
+            // if the fraction is just a fraction then it just needs to split the num and the den and then convert the sttring back to number
+            const [num, den] = rawAmount.split('/');
+            numericValue = parseFloat(num) / parseFloat(den);
+        }
+    } else {
+        // if it not a fraction at all so e.g 500 then it just gives the number back
+        numericValue = parseFloat(rawAmount);
+    }
+
+    // to check if the number is really a valid number because in the conversion sth went wrong often
+    // if it is not a number it just gives the original measurement back
+    if (isNaN(numericValue)) return trimmed;
+
+    // now the converted measuremnts can be scaled by multiplying it with the ratio
+    const scaledValue = numericValue * ratio;
+
+    // somitemes there is a looong floating decimal and this needs to be rounded to 2 decimal places
+    // checks if the value jsut scaled is a integer or not
+    const formattedValue = Number.isInteger(scaledValue)
+        // if it is then it is ok and it should jsut take the scaled value
+        ? scaledValue
+        // if not it needs to be rounded
+        : Math.round(scaledValue * 100) / 100;
+
+    // then the number and the unit can be put back together 
+    return `${formattedValue}${restOfMeasure}`;
+    };

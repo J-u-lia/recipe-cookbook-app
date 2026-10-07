@@ -1,7 +1,8 @@
 // helper function to handle the Searching on the Home page
 // IMPORTS
-import React, { useState } from 'react';    // react hook to remeber things taht can change
+import { useState } from 'react';    // react hook to remeber things taht can change
 import { Search, Users, Minus, Plus, Eye, CheckSquare, Square } from 'lucide-react';    // icons
+import { scaleMeasure } from '../utils/cookbookHelper';
 
 // react component
 function SearchResults() {
@@ -393,30 +394,34 @@ function SearchResults() {
                                             <h5 className="fw-bold mb-3">Ingredients Checklist</h5>
 
                                             <ul className="list-group list-group-flush mb-4">
-                                                {getIngredientsList(selectedRecipe).map((item, index) => (
-                                                    <li
-                                                        key={index}
-                                                        onClick={() => toggleIngredientCheck(index)}
-                                                        className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
-                                                        style={{ cursor: 'pointer' }}
-                                                    >
-                                                        {checkedIngredients[index] ? (
-                                                            <CheckSquare size={20} className="text-success" />
-                                                        ) : (
-                                                            <Square size={20} className="text-muted" />
-                                                        )}
+                                                {getIngredientsList(selectedRecipe).map((item, index) => {
+                                                    const displayMeasure = scaleMeasure(item.measure, servings, 4)
 
-                                                        <span
-                                                            className={
-                                                                checkedIngredients[index]
-                                                                    ? 'text-decoration-line-through text-muted'
-                                                                    : ''
-                                                            }
+                                                    return(
+                                                        <li
+                                                            key={index}
+                                                            onClick={() => toggleIngredientCheck(index)}
+                                                            className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
+                                                            style={{ cursor: 'pointer' }}
                                                         >
-                                                            <strong>{item.measure}</strong> {item.ingredient}
-                                                        </span>
-                                                    </li>
-                                                ))}
+                                                            {checkedIngredients[index] ? (
+                                                                <CheckSquare size={20} className="text-success" />
+                                                            ) : (
+                                                                <Square size={20} className="text-muted" />
+                                                            )}
+
+                                                            <span
+                                                                className={
+                                                                    checkedIngredients[index]
+                                                                        ? 'text-decoration-line-through text-muted'
+                                                                        : ''
+                                                                }
+                                                            >
+                                                                <strong>{displayMeasure}</strong> {item.ingredient}
+                                                            </span>
+                                                        </li>
+                                                    )
+                                                })}
                                             </ul>
                                         </div>
 

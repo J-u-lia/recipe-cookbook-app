@@ -1,8 +1,8 @@
 // helper function that handles the recipe of the day card on the home screen
 // IMPORTS
 import { useState, useEffect } from 'react';   {/* import useState hook from Reakt - allows component to remember information that can change (e.g what has user typed into search box) */}
-import { Sparkles, Clock, Globe, Users, Minus, Plus, CheckSquare, Square, Heart } from 'lucide-react'; // icons
-import { toggleSaveRecipe, isRecipeSaved } from '../utils/cookbookHelper';
+import { Sparkles, Globe, Users, Minus, Plus, CheckSquare, Square, Heart } from 'lucide-react'; // icons
+import { toggleSaveRecipe, isRecipeSaved, scaleMeasure } from '../utils/cookbookHelper';
 
 // creates the component which is then imported in Home.jsx
 function RecipeOfTheDay() {
@@ -350,45 +350,49 @@ function RecipeOfTheDay() {
                                 <div className="list-group">
 
                                 {getIngredientsList(recipeOfDay).map(
-                                    (item, index) => (
-                                        <button
-                                            key={index}
-                                            type="button"
-                                            className="list-group-item list-group-item-action d-flex align-items-center gap-3"
-                                            onClick={() =>
-                                                toggleIngredientCheck(index)
-                                            }
-                                        >
+                                    (item, index) => {
+                                        const displayMeasure = scaleMeasure(item.measure, servings, 4);
 
-                                        {/* Checkbox icon */}
-                                        {checkedIngredients[index] ? (
-                                            <CheckSquare
-                                                size={20}
-                                                className="text-success flex-shrink-0"
-                                            />
-                                        ) : (
-                                            <Square
-                                                size={20}
-                                                className="text-muted flex-shrink-0"
-                                            />
-                                        )}
+                                        return(
+                                            <button
+                                                key={index}
+                                                type="button"
+                                                className="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                                                onClick={() =>
+                                                    toggleIngredientCheck(index)
+                                                }
+                                            >
 
-                                        {/* Ingredient text */}
-                                        <span
-                                            className={
-                                                checkedIngredients[index]
-                                                ? 'text-decoration-line-through text-muted'
-                                                : ''
-                                            }
-                                        >
-                                            <strong>
-                                                {item.measure}
-                                            </strong>{' '}
-                                            {item.ingredient}
-                                        </span>
+                                                {/* Checkbox icon */}
+                                                {checkedIngredients[index] ? (
+                                                    <CheckSquare
+                                                        size={20}
+                                                        className="text-success flex-shrink-0"
+                                                    />
+                                                ) : (
+                                                    <Square
+                                                        size={20}
+                                                        className="text-muted flex-shrink-0"
+                                                    />
+                                                )}
 
-                                    </button>
-                                    )
+                                                {/* Ingredient text */}
+                                                <span
+                                                    className={
+                                                        checkedIngredients[index]
+                                                        ? 'text-decoration-line-through text-muted'
+                                                        : ''
+                                                    }
+                                                >
+                                                    <strong>
+                                                        {displayMeasure}
+                                                    </strong>{' '}
+                                                    {item.ingredient}
+                                                </span>
+
+                                            </button>
+                                        );
+                                    }
                                 )}
 
                                 </div>

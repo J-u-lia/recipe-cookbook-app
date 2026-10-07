@@ -8,7 +8,7 @@
 
 // IMPORTS           
 import { Link } from 'react-router-dom';   {/* import Link and useNavigate from React Router - creates navigation links without completely reloading page and allows JS code to navigate user to another route */}
-import { Flame, Cake, Sparkles, ChefHat } from 'lucide-react';    {/* import several icons from lucide-react library - ready-made React components that display icons*/}
+import { Flame, Cake, ChefHat } from 'lucide-react';    {/* import several icons from lucide-react library - ready-made React components that display icons*/}
 import './Home.css';    {/* import the styling file for the Home page*/}
 import SearchResults from '../components/SearchResults';
 import RecipeOfTheDay from '../components/RecipeOfTheDay';
