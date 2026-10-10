@@ -1,54 +1,73 @@
 // function that includes all the logic for the different recipe detail modals
 
+// import the functions used
 import { useEffect, useState } from 'react';
+// improt icons
 import { Heart, Minus, Plus, PlusCircle, Trash2, Users } from 'lucide-react';
-
+// improt helper functions
 import { isRecipeSaved, scaleMeasure, toggleSaveRecipe } from '../utils/cookbookHelper';
 
+// create the fucntion that displays the details of the recipe in the popup window
+// managses the serving size scaling, ingredient checklist
+// identifies if it is a baking or cooking recipe and displays the conversion guid if baking or dessert
+// save recipies logic, edit, remove, close buttons
 function RecipeDetailModal({
-    recipe,
-    onClose,
-    recipeType = 'auto',
-    showSaveButton = false,
-    defaultCategory = 'Cooking',
-    onRemove,
-    onEdit,
-    children,
+    // define all the props
+    recipe, // recipe that details should be displyed
+    onClose,    // function thats called when modal should close
+    recipeType = 'auto',    // auto is baking and not then cookig
+    showSaveButton = false, // should savve button be displayed
+    defaultCategory = 'Cooking',    // when a recipe doesnt have a category then cookign
+    onRemove,   // remove recipe function
+    onEdit, // edit recipe function
 }) {
+    // devine the variables servings, checked ingredients and re-rendering for svaed status
     const [servings, setServings] = useState(4);
     const [checkedIngredients, setCheckedIngredients] = useState({});
     const [, setSaveVersion] = useState(0);
 
+    // when the user opens a different recipe then reset the serving size and clear the checkd ingredients
     useEffect(() => {
         setServings(4);
         setCheckedIngredients({});
     }, [recipe?.idMeal]);
 
+    // if there is no recipe selected then return
     if (!recipe) return null;
 
+    // reads category and converts it to lowercase - more consistent
     const category = recipe.strCategory?.toLowerCase();
 
+    // if the recipe is baking then it is baking if its auto it checks if its baking or dessert and if neither then cooking
     const isBaking =
         recipeType === 'baking' ||
         (recipeType === 'auto' &&
             (category === 'baking' || category === 'dessert'));
+    
+    // variable to check if the banenr shold be displayed or not
+    const shouldShowConversionBanner =
+        category === 'baking' || category === 'dessert';
 
+    // array fo the ingredients and the measurements
     const ingredients = [];
 
-    // TheMealDB stores ingredients in numbered fields.
+    // iterare over the 20 possible ingrents
     for (let i = 1; i <= 20; i++) {
         const ingredient = recipe[`strIngredient${i}`]?.trim();
         const measure = recipe[`strMeasure${i}`]?.trim() || '';
 
+        // add the ingredients that have a ngredient name
         if (ingredient) {
             ingredients.push({ ingredient, measure });
         }
     }
 
+    // check if the curetn recipe is already saved - so the button is displayed correctly
     const saved = recipe.idMeal
         ? isRecipeSaved(recipe.idMeal)
         : false;
 
+    // its for saving or unsaving the recipe depending on in what state the save button was in before
     const handleToggleSave = () => {
         if (!recipe.idMeal) return;
 
@@ -57,10 +76,11 @@ function RecipeDetailModal({
             strCategory: recipe.strCategory || defaultCategory,
         });
 
-        // Refresh the button after localStorage changes.
+        // Refresh the button after localStorage changes so its looks match the saving state
         setSaveVersion((previous) => previous + 1);
     };
 
+    // to safe the checked state of ingredient or unchecked
     const toggleIngredientCheck = (index) => {
         setCheckedIngredients((previous) => ({
             ...previous,
@@ -68,7 +88,9 @@ function RecipeDetailModal({
         }));
     };
 
+    // renders the modal overlay
     return (
+        // creates the modal with onClick which detects the click on the overlay
         <div
             className="modal show d-block"
             tabIndex="-1"
@@ -84,7 +106,7 @@ function RecipeDetailModal({
             <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                 <div className="modal-content rounded-4 border-0 shadow-lg">
 
-                    {/* Modal header */}
+                    {/* Modal header with name and closing button */}
                     <div className="modal-header border-0 bg-light p-4">
                         <h3 className="modal-title fw-bold">
                             {recipe.strMeal}
@@ -191,8 +213,52 @@ function RecipeDetailModal({
                             </div>
                         </div>
 
-                        {/* Optional page-specific content, e.g. the baking conversion guide */}
-                        {children}
+                       
+                        {/* Baking conversion - only shown for Baking and Dessert recipes */}
+                        {shouldShowConversionBanner && (
+                            <div className="alert alert-info rounded-4 mb-4">
+                                <h5 className="mb-3 fw-bold">
+                                    Kitchen Conversions at a Glance
+                                </h5>
+
+                                <div className="row g-3">
+                                    {/* Weight & Volume */}
+                                    <div className="col-12 col-md-6">
+                                        <strong>Weight &amp; Volume</strong>
+
+                                        <ul className="mb-0 mt-2 ps-3">
+                                            <li>
+                                                1 oz (Weight) = <strong>28.35 g</strong>
+                                            </li>
+                                            <li>
+                                                1 fl oz (Liquid) = <strong>29.6 ml</strong>
+                                            </li>
+                                            <li>
+                                                1 cup (Liquid) = <strong>240 ml</strong>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    {/* Cup Conversions */}
+                                    <div className="col-12 col-md-6">
+                                        <strong>1 Cup equals</strong>
+
+                                        <ul className="mb-0 mt-2 ps-3">
+                                            <li>
+                                                Flour = <strong>125 g</strong>
+                                            </li>
+                                            <li>
+                                                Sugar = <strong>200 g</strong>
+                                            </li>
+                                            <li>
+                                                Butter / Cream Cheese = <strong>225–227 g</strong>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
 
                         {/* Ingredients and instructions */}
                         <div className="row g-4">
