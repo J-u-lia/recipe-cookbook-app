@@ -19,15 +19,25 @@ function Baking() {
     const tagParam = searchParams.get('tag');
     const typeParam = searchParams.get('type');
     
+    const [error, setError] = useState('');
+    const [detailError, setDetailError] = useState('');
+    const [loadingDetailsId, setLoadingDetailsId] = useState(null);
+
     const categories = ['Dessert', 'Breakfast', 'Side'];    // the different categories to choose from from the TheMealDB
 
     // asynchronous function to get the data the TheMealDB API provides for the selected category
     const fetchBakingRecipes = async (category) => {
+        setError('');
         // it is loading to this is true
         setLoading(true);
         try {
             // get the data from the URL with the query parameter at the end to automatically put the right category in the link
             const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`);
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+
             // convert the data provided from JSOn into JS object
             const data = await response.json();
             // use the data.meals if exist if not use empty array
@@ -36,6 +46,9 @@ function Baking() {
             // if fetching goes wrong diplay error in console
             console.error('Error fetching baking recipes:', error);
             setRecipes([]);
+            setError(
+                'We could not load baking recipes right now. Please check your connection and try again.'
+            );
         } finally {
             // eitherway set the loading to false again, either finished loading or didn't even start
             setLoading(false);
@@ -44,18 +57,34 @@ function Baking() {
 
     // now the recipe details has to be fetched for each meal (everyone got an ID)
     const fetchRecipeDetails = async (idMeal) => {
+        setDetailError('');
+        setLoadingDetailsId(idMeal);
+
         try {
             // fetch the data from the URL now it is lookup.php again so the details
             const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`);
-            const data = await response.json(); // convert JSON in JS object
-            // if the AP response contains a meal array and if this array atleast has one recipe
-            if (data.meals && data.meals[0]) {
-                // then store the selected recipe in the stateto get visible
-                setSelectedRecipe(data.meals[0]);
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
             }
+            
+            const data = await response.json(); // convert JSON in JS object
+            
+            // if the AP response contains a meal array and if this array atleast has one recipe
+            // then store the selected recipe in the stateto get visible
+            if (!data.meals || !data.meals[0]) {
+                throw new Error('Recipe not found.');
+            }
+
+            setSelectedRecipe(data.meals[0]);
         } catch (error) {
             // if fetching fails display error message
             console.error('Error fetching details:', error);
+            setDetailError(
+                'We could not load this recipe. Please try again.'
+            );
+        } finally {
+            setLoadingDetailsId(null);
         }
     };
 
@@ -106,13 +135,27 @@ function Baking() {
                 ))}
             </div>
 
+            {detailError && (
+                <div className="alert alert-danger" role="alert">
+                    {detailError}
+                </div>
+            )}
+
             {/* RECIPE GRID - this says if the meals are currently loading than display the spinner with the little text
                               if not loading and no recipes to get then display no recipes
                               if not loading but finsihed loading then show the recipe cards */}
             {loading ? (
                 <div className="text-center py-5">
-                    <div className="spinner-border text-primary" role="status"></div>
-                    <p className="mt-2 text-muted">Loading fresh bakery recipes...</p>
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="mt-2 text-muted">
+                        Loading fresh bakery recipes...
+                    </p>
+                </div>
+            ) : error ? (
+                <div className="alert alert-danger text-center" role="alert">
+                    {error}
                 </div>
             ) : recipes.length === 0 ? (
                 <div className="text-center py-5">
@@ -141,9 +184,23 @@ function Baking() {
                                     </div>
                                     <button
                                         onClick={() => fetchRecipeDetails(meal.idMeal)}
+                                        disabled={loadingDetailsId !== null}
                                         className="btn btn-outline-dark btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
                                     >
-                                        <Eye size={16} /> View Recipe
+                                        {loadingDetailsId === meal.idMeal ? (
+                                            <>
+                                                <span
+                                                    className="spinner-border spinner-border-sm"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                />
+                                                Loading...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Eye size={16} /> View Recipe
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             </div>
