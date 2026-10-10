@@ -5,7 +5,7 @@
 // with useState React remembers Information that changes, useEffect is for runnging a code when sth happens in the component
 import { useState, useEffect } from 'react';
 // import icons from lucide react
-import { Flame, Users, Plus, Minus, CheckSquare, Square, Heart, Eye } from 'lucide-react';
+import { Flame, Eye } from 'lucide-react';
 import './Cooking.css'; // import .css file for styling
 // helper function for cookbook
 import { toggleSaveRecipe, isRecipeSaved, scaleMeasure } from '../utils/cookbookHelper';

@@ -1,8 +1,7 @@
 // helper function to handle the Searching on the Home page
 // IMPORTS
 import { useState } from 'react';    // react hook to remeber things taht can change
-import { Search, Users, Minus, Plus, Eye, CheckSquare, Square } from 'lucide-react';    // icons
-import { scaleMeasure } from '../utils/cookbookHelper';
+import { Search, Eye} from 'lucide-react';    // icons
 import RecipeDetailModal from '../components/RecipeDetailModal';
 
 // react component

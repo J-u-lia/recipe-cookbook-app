@@ -1,8 +1,8 @@
 // helper function that handles the recipe of the day card on the home screen
 // IMPORTS
 import { useState, useEffect } from 'react';   {/* import useState hook from Reakt - allows component to remember information that can change (e.g what has user typed into search box) */}
-import { Sparkles, Globe, Users, Minus, Plus, CheckSquare, Square, Heart } from 'lucide-react'; // icons
-import { toggleSaveRecipe, isRecipeSaved, scaleMeasure } from '../utils/cookbookHelper';
+import { Sparkles, Globe } from 'lucide-react'; // icons
+import { toggleSaveRecipe } from '../utils/cookbookHelper';
 import RecipeDetailModal from '../components/RecipeDetailModal';
 
 // creates the component which is then imported in Home.jsx

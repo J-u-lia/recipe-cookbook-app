@@ -3,7 +3,7 @@
 // import the functions used
 import { useEffect, useState } from 'react';
 // improt icons
-import { Heart, Minus, Plus, PlusCircle, Trash2, Users } from 'lucide-react';
+import { Heart, Minus, Plus, PlusCircle, Trash2, Users, CheckSquare, Square } from 'lucide-react';
 // improt helper functions
 import { isRecipeSaved, scaleMeasure, toggleSaveRecipe } from '../utils/cookbookHelper';
 
@@ -264,10 +264,10 @@ function RecipeDetailModal({
                         <div className="row g-4">
                             <div className="col-md-5">
                                 <h5 className="fw-bold mb-3">
-                                    Ingredients
+                                    Ingredients Checklist
                                 </h5>
 
-                                <ul className="list-unstyled">
+                                <ul className="list-group list-group-flush mb-4">
                                     {ingredients.map((item, index) => {
                                         const displayMeasure = scaleMeasure(
                                             item.measure,
@@ -278,36 +278,40 @@ function RecipeDetailModal({
                                         return (
                                             <li
                                                 key={`${item.ingredient}-${index}`}
-                                                className="mb-2"
+                                                onClick={() => toggleIngredientCheck(index)}
+                                                className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
+                                                style={{ cursor: 'pointer' }}
                                             >
-                                                <label className="d-flex align-items-start gap-2">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="form-check-input mt-1"
-                                                        checked={Boolean(
-                                                            checkedIngredients[index]
-                                                        )}
-                                                        onChange={() =>
-                                                            toggleIngredientCheck(index)
-                                                        }
+                                                {/* CHECKBOX ICON */}
+                                                {checkedIngredients[index] ? (
+                                                    <CheckSquare
+                                                        size={20}
+                                                        className="text-success flex-shrink-0"
                                                     />
+                                                ) : (
+                                                    <Square
+                                                        size={20}
+                                                        className="text-muted flex-shrink-0"
+                                                    />
+                                                )}
 
-                                                    <span
-                                                        className={
-                                                            checkedIngredients[index]
-                                                                ? 'text-decoration-line-through text-muted'
-                                                                : ''
-                                                        }
-                                                    >
-                                                        <strong>{displayMeasure}</strong>{' '}
-                                                        {item.ingredient}
-                                                    </span>
-                                                </label>
+                                                {/* INGREDIENT */}
+                                                <span
+                                                    className={
+                                                        checkedIngredients[index]
+                                                            ? 'text-decoration-line-through text-muted'
+                                                            : ''
+                                                    }
+                                                >
+                                                    <strong>{displayMeasure}</strong>{' '}
+                                                    {item.ingredient}
+                                                </span>
                                             </li>
                                         );
                                     })}
                                 </ul>
                             </div>
+
 
                             <div className="col-md-7">
                                 <h5 className="fw-bold mb-3">

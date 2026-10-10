@@ -1,10 +1,10 @@
 // follows similar strucutr to cooking screen
 //IMPORTS
 import { useState, useEffect } from 'react';    // import again useState and useEffect the react hooks
-import { Cake, CheckSquare, Square, Users, Minus, Plus, Heart, Eye } from 'lucide-react';  // icons from lucide
+import { Cake, Eye } from 'lucide-react';  // icons from lucide
 import './Baking.css';  // style sheet
 // helper function for cookbook
-import { toggleSaveRecipe, isRecipeSaved, scaleMeasure } from '../utils/cookbookHelper';
+import { toggleSaveRecipe } from '../utils/cookbookHelper';
 import { useSearchParams } from 'react-router-dom';
 import RecipeDetailModal from '../components/RecipeDetailModal';
 

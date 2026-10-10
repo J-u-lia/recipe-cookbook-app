@@ -2,8 +2,7 @@
 
 // IMPORTS
 import { useState, useEffect } from 'react';    // react hooks to remember information that can change and that react can perform sth as a side effect
-import { Bookmark, Heart, Trash2, Eye, Users, Minus, Plus, CheckSquare, Square, PlusCircle } from 'lucide-react';   // icons
-import { scaleMeasure } from '../utils/cookbookHelper';  //helper functions
+import { Bookmark, Heart, Trash2, Eye, PlusCircle } from 'lucide-react';   // icons
 import AddRecipeModal from '../components/AddRecipeModal';
 import './MyCookbook.css';
 import RecipeDetailModal from '../components/RecipeDetailModal';
