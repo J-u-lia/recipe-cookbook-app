@@ -12,13 +12,22 @@ function SearchResults() {
     const [loading, setLoading] = useState(false);  // stores if the application is currently loading
     const [searched, setSearched] = useState(false);    // stores if the user has searched sth or not so that the rendering works correctly when coming to home page
     
+    // for error handling
+    const [error, setError] = useState('');
+
     // runs when user submits search - is async cause it could take time to search in the API 
     const handleSearchSubmit = async (e) => {
         e.preventDefault(); // don't refresh page
         const term = searchTerm.trim().toLowerCase();   // gets the search term but converts it to lowercase, no spaces
         if (!term) return;  // if nothing typed then stop function
 
+        if (!searchTerm.trim()) {
+            setError('Please enter a recipe or ingredient to search for.');
+            return;
+        }
+
         setLoading(true);   // if there is sth typed then state is loading
+        setError('');
         setSelectedRecipe(null);    // close any recipes that might currently be open
         setSearched(true);  // remember that a search has been done
 
@@ -112,6 +121,9 @@ function SearchResults() {
             // if the fetching goes wrong print message in console and te resicpis are empty list
             console.error('Error fetching recipes:', error);
             setRecipes([]);
+            setError(
+                'We could not load recipes right now. Please try again.'
+            );
         } finally {
             // both ways loading stops
             setLoading(false);
@@ -128,6 +140,11 @@ function SearchResults() {
                 const res = await fetch(
                     `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${meal.idMeal}`
                 );
+
+                if (!res.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+
                 // convert it 
                 const data = await res.json();
                 // to make sure api actually returned a meal and then store the full recipe as the selected recipe
@@ -206,8 +223,14 @@ function SearchResults() {
                 </div>
             )}
 
+            {error && (
+                <div className="alert alert-danger mt-3" role="alert">
+                    {error}
+                </div>
+            )}
+
             {/* NO RESULTS FOUND STATE - if no recipe found thatn display this text*/}
-            {!loading && searched && recipes.length === 0 && (
+            {!loading && searched && !error && recipes.length === 0 && (
                 <div className="alert alert-light border rounded-4 text-center py-4 mt-4 text-muted">
                     No recipes found matching "<strong>{searchTerm}</strong>". Try searching for another ingredient, category, origin, or dish name (e.g., Italian, Pasta, Chicken, Dessert).
                 </div>

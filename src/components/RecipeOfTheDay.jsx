@@ -11,6 +11,8 @@ function RecipeOfTheDay() {
     const [loading, setLoading] = useState(true);       // Controls the loading message/spinner
     const [showModal, setShowModal] = useState(false);    // Controls whether the full recipe modal is open
     
+    const [error, setError] = useState('');
+
     // Get the recipe when the component first loads
     useEffect(() => {
         const fetchRecipeOfDay = async () => {
@@ -25,12 +27,18 @@ function RecipeOfTheDay() {
             if (savedRecipe && savedDate === today) {
                 setRecipeOfDay(JSON.parse(savedRecipe));    // store it as a string
                 setLoading(false);  // not loading anymore
+                setError('');
                 return;
             }
 
             try {
                 // Get a random recipe from TheMealDB with random.php
                 const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed: ${response.status}`);
+                }
+                
                 const data = await response.json();     // Convert the response into JavaScript data
 
                 // response should contain meals property and a recipe 
@@ -45,6 +53,10 @@ function RecipeOfTheDay() {
             } catch (error) {
                 // Show an error in the browser console if the API fails
                 console.error('Error fetching recipe of the day:', error);
+                setError(
+                    'We could not load today’s recipe. Please try again later.'
+                );
+
             } finally {
                 // Stop showing the loading state
                 setLoading(false);
@@ -79,12 +91,18 @@ function RecipeOfTheDay() {
                         <div className="text-center py-5">
                             <div className="spinner-border text-warning" role="status">
                                 <span className="visually-hidden">
-                                    Loading...
+                                    Loading Recipe of the Day...
                                 </span>
                             </div>
                             <p className="mt-3 text-muted">
                                 Finding today's recipe...
                             </p>
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="alert alert-warning" role="alert">
+                            {error}
                         </div>
                     )}
 

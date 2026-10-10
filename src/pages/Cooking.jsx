@@ -24,6 +24,10 @@ function Cooking() {
     const tagParam = searchParams.get('tag');   // for tags
     const typeParam = searchParams.get('type'); // for type
     
+    const [error, setError] = useState('');
+    const [detailError, setDetailError] = useState('');
+    const [loadingDetailsId, setLoadingDetailsId] = useState(null);
+
     // Categories you can select (available from TheMealDB) for cooking dishes
     const categories = ['Chicken', 'Beef', 'Pasta', 'Seafood', 'Vegetarian', 'Side'];
 
@@ -32,9 +36,16 @@ function Cooking() {
     // query is the value website expects so e.g Chicken
     const fetchRecipes = async (query) => {
         setLoading(true);   // to tell React it is going to load sth
+        setError('');
+
         try {
             // first contact the external API over the URL with await because this needs time
             const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${query}`);
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+            
             // the data from the API is a json (string) we need to convert it into JavaScript object 
             const data = await response.json();
             // takes recipes from API response and puts them into React state - updates state
@@ -44,6 +55,9 @@ function Cooking() {
             // if sth goes wrong inside the try an error will be printet in console
             console.error('Error fetching recipes:', error);
             setRecipes([]); // reset recipes to empty array
+            setError(
+                'We could not load recipes right now. Please check your connection and try again.'
+            );
         } finally {
             // runs in both try and catch cases
             // tells that the API request is finished
@@ -54,19 +68,36 @@ function Cooking() {
     // Fetch detailed recipe info for the Modal view
     // the idMead is from TheMealDB becuase it gives each meal an ID
     const fetchRecipeDetails = async (idMeal) => {
+        setDetailError('');
+        setLoadingDetailsId(idMeal);
+
         try {
             // get the Data but this time with lookup.php to get details insteat of filter.php
             const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`);
-            const data = await response.json(); // convert the data
-            // check if data.meals exist and if there is a first item in terhe
-            if (data.meals && data.meals[0]) {
-                // if there is a recipe selected then display the modal
-                // so first the selectedRecipe is null but now it is actual recipe
-                setSelectedRecipe(data.meals[0]);
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
             }
+            
+            const data = await response.json(); // convert the data
+            
+            // check if data.meals exist and if there is a first item in terhe
+            // if there is a recipe selected then display the modal
+                // so first the selectedRecipe is null but now it is actual recipe
+            if (!data.meals || !data.meals[0]) {
+                throw new Error('Recipe not found.');
+            }
+
+            setSelectedRecipe(data.meals[0]);
+            
         } catch (error) {
             // if it fails display error message
             console.error('Error fetching recipe details:', error);
+            setDetailError(
+                'We could not load this recipe. Please try again.'
+            )
+        } finally {
+            setLoadingDetailsId(null);
         }
     };
 
@@ -133,6 +164,12 @@ function Cooking() {
                 ))}
             </div>
 
+            {detailError && (
+                <div className="alert alert-danger" role="alert">
+                    {detailError}
+                </div>
+            )}
+
             {/* RECIPE GRID */}
             {/* this is conditional loading so if the loading is true then it should show the spinner if not then just continue
                 first the bootstrap loading spinner is defined
@@ -140,8 +177,16 @@ function Cooking() {
                 if it is not loading but there are recipes then it iterates through every recipe returned by the API and for every recipe a card is created */}
             {loading ? (
                 <div className="text-center py-5">
-                    <div className="spinner-border text-warning" role="status"></div>
-                    <p className="mt-2 text-muted">Fetching savory recipes from API...</p>
+                    <div className="spinner-border text-warning" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="mt-2 text-muted">
+                        Fetching savory recipes from API...
+                    </p>
+                </div>
+            ) : error ? (
+                <div className="alert alert-danger text-center" role="alert">
+                    {error}
                 </div>
             ) : recipes.length === 0 ? (
                 <div className="text-center py-5">
@@ -169,9 +214,23 @@ function Cooking() {
                                     so if API says strMeal ="Bolognese" then react diplays Bolognese and then the ID = 123 is get and then fetchRecipeDetails(123) is running which makes an API request which get the Full recipe as Modal */}
                                     <button
                                         onClick={() => fetchRecipeDetails(meal.idMeal)}
+                                        disabled={loadingDetailsId !== null}
                                         className="btn btn-outline-dark btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
                                     >
-                                        <Eye size={16} /> View Recipe
+                                        {loadingDetailsId === meal.idMeal ? (
+                                            <>
+                                                <span
+                                                    className="spinner-border spinner-border-sm"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                />
+                                                Loading...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Eye size={16} /> View Recipe
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             </div>
