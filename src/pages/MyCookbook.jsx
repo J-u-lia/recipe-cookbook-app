@@ -17,10 +17,6 @@ function MyCookbook() {
     // which recipe is curretnly looked at
     const [selectedRecipe, setSelectedRecipe] = useState(null);
 
-    // Modal state for scaling and checklist
-    const [servings, setServings] = useState(4);    // serving amount displayed
-    const [checkedIngredients, setCheckedIngredients] = useState({});   // which ingredients have been checked
-
     // Load saved cookbook from localStorage and put it into react state
     const loadCookbook = () => {
         const stored = localStorage.getItem('my_cookbook'); // checks if sth is stored under key my_cookbook
@@ -85,8 +81,6 @@ function MyCookbook() {
         // if it is a user-created recipe then load it directly from storage
         if (meal?.isCustom) {
             setSelectedRecipe(meal);
-            setCheckedIngredients({});
-            setServings(4);
             return;
         }
         // if not then fetch full details from TheMealDB API
@@ -98,36 +92,11 @@ function MyCookbook() {
             if (data.meals && data.meals[0]) {
                 // then the first returned meal is the selected recipe, no ingredient is checked, serving size 4 
                 setSelectedRecipe(data.meals[0]);
-                setCheckedIngredients({});
-                setServings(4);
             }
         } catch (error) {
             // if sth goes wrong fetching then display error in console
             console.error('Error fetching recipe details:', error);
         }
-    };
-
-    // "translate" the ingredients and measurements from the TheMealDB way to display into arrays
-    const getIngredientsList = (meal) => {
-        const list = [];    // first empty list
-        for (let i = 1; i <= 20; i++) { // then iterate through all the 20 input fields
-            const ingredient = meal[`strIngredient${i}`];
-            const measure = meal[`strMeasure${i}`];
-            // check if ingreient actually contains sth so it ignores empty ones
-            if (ingredient && ingredient.trim() !== '') {
-                list.push({ ingredient, measure: measure || '' });  // add ingredient and measuremnt one by one at the end of array
-            }
-        }
-        return list;
-    };
-
-    // when user clicks an ingredient this runs to make ingredient checkbox from uncheked to check and from not crossed through to crossed through
-    const toggleIngredientCheck = (index) => {
-        // take the previous value of checkedIngredients and copie the existing checked states and then reverse the current value
-        setCheckedIngredients((prev) => ({
-            ...prev,
-            [index]: !prev[index],
-        }));
     };
 
     // it is now possible to decide Liked vs My Recipes and then the category filter is applied

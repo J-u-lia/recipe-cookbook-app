@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';    // import again useState and useEffect the react hooks
 import { Cake, Eye } from 'lucide-react';  // icons from lucide
 import './Baking.css';  // style sheet
-// helper function for cookbook
-import { toggleSaveRecipe } from '../utils/cookbookHelper';
 import { useSearchParams } from 'react-router-dom';
 import RecipeDetailModal from '../components/RecipeDetailModal';
 
@@ -20,18 +18,7 @@ function Baking() {
     const categoryParam = searchParams.get('category');
     const tagParam = searchParams.get('tag');
     const typeParam = searchParams.get('type');
-    const [, setSearchParams] = useSearchParams();
-
-    // Baking Converter State (Cups to Grams / Oz to Grams) for different scalings used
-    const [cupsValue, setCupsValue] = useState(1);  // stores number entered into converter, initially 1 if user changes this then calculation updates 
-    const [checkedIngredients, setCheckedIngredients] = useState({});   // stores which ingredient has been checked, so first nothing has been checked so empty
-
-    // for portion scaling
-    const [servings, setServings] = useState(4);
-
-    // Local state trigger to force UI re-render when saving/unsaving recipes
-    const [, setSavedState] = useState(false);
-
+    
     const categories = ['Dessert', 'Breakfast', 'Side'];    // the different categories to choose from from the TheMealDB
 
     // asynchronous function to get the data the TheMealDB API provides for the selected category
@@ -65,8 +52,6 @@ function Baking() {
             if (data.meals && data.meals[0]) {
                 // then store the selected recipe in the stateto get visible
                 setSelectedRecipe(data.meals[0]);
-                setCheckedIngredients({});  // when opening the recipe all ingredients should start unchecked
-                setServings(4); // Default setting for serving size
             }
         } catch (error) {
             // if fetching fails display error message
@@ -85,47 +70,6 @@ function Baking() {
     useEffect(() => {   // fetch the recipes when category filter state canges
         fetchBakingRecipes(categoryFilter);
     }, [categoryFilter]);
-
-    
-
-    // the ingredient lsit is gotten from one complete meal object from the API because TheMealDB doesn't give ingredients as simple array
-    const getIngredientsList = (meal) => {
-        const list = [];    // empty list first
-        // iterate over the ingreadients from 1 to 20 again
-        for (let i = 1; i <= 20; i++) {
-            // for every entrance write the property names for the ingredient and the measures
-            const ingredient = meal[`strIngredient${i}`];
-            const measure = meal[`strMeasure${i}`];
-            // if an ingredient exists and it isnt jsut an empty whitespace
-            if (ingredient && ingredient.trim() !== '') {
-                // add the ingredient to the array with push(), first the ingredient and then the measure but the measure can also be empty if there is no measure
-                list.push({ ingredient, measure: measure || '' });
-            }
-        }
-        return list;    // return that list
-    };
-
-    // fucntion runs when user clicks an ingredient and then the state is updates (the same as in cooking)
-    const toggleIngredientCheck = (index) => {
-        // the prev gives the prevous state because i want to keep the existing checked ingredients while changing only one
-        setCheckedIngredients((prev) => ({
-            ...prev,    // copies all existing properties from prev into new opbject
-            [index]: !prev[index],  // takes the current value of this ingredient index and reverses it so if prev[1] = false then it is true now so it can go from unchecked to checked and from checked to unchecked
-        }));
-    };
-
-    // Toggle save handler with state trigger
-    const handleToggleSave = () => {
-        if (!selectedRecipe) return;
-
-        const recipeToSave = {
-            ...selectedRecipe,
-            strCategory: selectedRecipe.strCategory || 'Baking'
-        };
-
-        toggleSaveRecipe(recipeToSave);
-        setSavedState((prev) => !prev); // force immediate re-render
-    };
 
 
     // UI that this component should display

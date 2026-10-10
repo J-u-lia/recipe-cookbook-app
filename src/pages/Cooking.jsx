@@ -7,8 +7,6 @@ import { useState, useEffect } from 'react';
 // import icons from lucide react
 import { Flame, Eye } from 'lucide-react';
 import './Cooking.css'; // import .css file for styling
-// helper function for cookbook
-import { toggleSaveRecipe, isRecipeSaved, scaleMeasure } from '../utils/cookbookHelper';
 import { useSearchParams } from 'react-router-dom';
 import RecipeDetailModal from '../components/RecipeDetailModal';
 
@@ -16,23 +14,16 @@ import RecipeDetailModal from '../components/RecipeDetailModal';
 function Cooking() {
     const [recipes, setRecipes] = useState([]); // react state for current recipe data taht is initially an empty array, with function to change recipes
     const [loading, setLoading] = useState(true);   //  is application currently waiting for API (true) or not (false)
-    const [searchTerm, setSearchTerm] = useState('Chicken');    // a search value for the categories 
     const [categoryFilter, setCategoryFilter] = useState('Chicken');    // currently selected categroy, with useEffect changing this variable triggers different API request
     const [selectedRecipe, setSelectedRecipe] = useState(null); // stores recipe that user has clicked, at beginning no selected recipe
-    const [servings, setServings] = useState(4);    // number of servings selected by user
-    const [checkedIngredients, setCheckedIngredients] = useState({});   // stores which ingredient the user has checked
-
+    
     // variables that extract information directly from browser's URL query strin
     // so when clicking on quicklinks on home they do route listening and then the user gets to the destination - this way the webpage can filter recipes before being even on the page
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const categoryParam = searchParams.get('category'); // search for category e.g., 'vegetarian'
     const tagParam = searchParams.get('tag');   // for tags
     const typeParam = searchParams.get('type'); // for type
-    const [, setSearchParams] = useSearchParams();
-
-    // State trigger to force immediate UI updates on heart toggle
-    const [, setSavedState] = useState(false);
-
+    
     // Categories you can select (available from TheMealDB) for cooking dishes
     const categories = ['Chicken', 'Beef', 'Pasta', 'Seafood', 'Vegetarian', 'Side'];
 
@@ -72,8 +63,6 @@ function Cooking() {
                 // if there is a recipe selected then display the modal
                 // so first the selectedRecipe is null but now it is actual recipe
                 setSelectedRecipe(data.meals[0]);
-                setServings(4); // everytime recipe opens start with 4 servings
-                setCheckedIngredients({});  // removes checked state from previous recipe so that the lsit has not checked ingredients that are not checked but were checked in another recipe
             }
         } catch (error) {
             // if it fails display error message
@@ -100,49 +89,6 @@ function Cooking() {
         setCategoryFilter(cat);
         setSearchParams({});
         fetchRecipes(cat);
-    };
-
-    // takes recipe object from TheMealDB and turns its ingredients into arrays
-    const getIngredientsList = (meal) => {
-        const list = [];    // first empty list
-        // iterates over every ingredient from 1 to 20 because TheMEalDB provides upt to 20 ingredient fields
-        for (let i = 1; i <= 20; i++) {
-            // this makes dynamic property names, so isntead of writing meal.strIngredient1, meal.strIngredient2, ect. it takes the i (so the number) and puts it behind strIngredient
-            const ingredient = meal[`strIngredient${i}`];
-            const measure = meal[`strMeasure${i}`]; // same with measurements
-            // checks if ingredient exist and that it isnt just an empty space because trim() removes the spaces
-            if (ingredient && ingredient.trim() !== '') {
-                // if the ingredients pass the test then they are added to the end of the array with push()
-                // if there isn't a measurement for a ingredient it uses empty string
-                list.push({ ingredient, measure: measure || '' });
-            }
-        }
-        // return the finished ingredient array
-        return list;
-    };
-
-    // when user clicks on ingredient this function runs - index says which ingredient
-        // need to do this because with react genereally create a new state object instead of modifying the existing one directly
-    const toggleIngredientCheck = (index) => {
-        // the prev gives the prevous state because i want to keep the existing checked ingredients while changing only one
-        setCheckedIngredients((prev) => ({
-            ...prev,    // copies all existing properties from prev into new opbject
-            [index]: !prev[index],  // takes the current value of this ingredient index and reverses it so if prev[1] = false then it is true now so it can go from unchecked to checked and from checked to unchecked
-        }));
-    };
-    
-    // Toggle save handler that updates both localStorage and local UI state
-    const handleToggleSave = () => {
-        if (!selectedRecipe) return;
-        
-        // Ensure strCategory exists (fallback to 'Cooking')
-        const recipeToSave = {
-            ...selectedRecipe,
-            strCategory: selectedRecipe.strCategory || 'Cooking'
-        };
-
-        toggleSaveRecipe(recipeToSave);
-        setSavedState((prev) => !prev); // Trigger immediate re-render
     };
 
     // beginn of JSX so React will diplay

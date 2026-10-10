@@ -58,7 +58,10 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
 
     const handleIngredientChange = (index, field, value) => {
         const updated = [...customRecipeForm.ingredients];
-        updated[index][field] = value;
+        updated[index] = {
+            ...updated[index],
+            [field]: value
+        };
 
         setCustomRecipeForm({
             ...customRecipeForm,

@@ -2,7 +2,6 @@
 // IMPORTS
 import { useState, useEffect } from 'react';   {/* import useState hook from Reakt - allows component to remember information that can change (e.g what has user typed into search box) */}
 import { Sparkles, Globe } from 'lucide-react'; // icons
-import { toggleSaveRecipe } from '../utils/cookbookHelper';
 import RecipeDetailModal from '../components/RecipeDetailModal';
 
 // creates the component which is then imported in Home.jsx
@@ -11,10 +10,7 @@ function RecipeOfTheDay() {
     const [recipeOfDay, setRecipeOfDay] = useState(null);   // Stores the recipe we get from TheMealDB
     const [loading, setLoading] = useState(true);       // Controls the loading message/spinner
     const [showModal, setShowModal] = useState(false);    // Controls whether the full recipe modal is open
-    const [servings, setServings] = useState(4);    // Stores the number of servings selected by the user
-    const [checkedIngredients, setCheckedIngredients] = useState({});    // Stores which ingredients have been checked
-    const [, setSavedState] = useState(false);  // Forces the component to update when a recipe is saved/unsaved
-
+    
     // Get the recipe when the component first loads
     useEffect(() => {
         const fetchRecipeOfDay = async () => {
@@ -57,46 +53,6 @@ function RecipeOfTheDay() {
 
         fetchRecipeOfDay(); // call the function
     }, []);
-
-    // Toggle an ingredient between checked and unchecked
-    const toggleIngredientCheck = (index) => {
-        setCheckedIngredients((prev) => ({
-            ...prev,
-            [index]: !prev[index],
-        }));
-    };
-
-    // Get all ingredients and measurements from a recipe
-    const getIngredientsList = (recipe) => {
-        if (!recipe) return [];
-
-        const list = [];
-
-        // TheMealDB stores ingredients as strIngredient1, strIngredient2, etc.
-        for (let i = 1; i <= 20; i++) {
-            const ingredient = recipe[`strIngredient${i}`];
-            const measure = recipe[`strMeasure${i}`];
-
-            // Only add ingredients that actually contain a value
-            if (ingredient && ingredient.trim() !== '') {
-            list.push({
-                ingredient: ingredient.trim(),
-                measure: measure ? measure.trim() : '',
-            });
-            }
-        }
-
-        return list;
-    };
-
-    // Toggle save handler that updates both localStorage and local UI state
-    const handleToggleSave = () => {
-        if (!recipeOfDay) return;
-        
-        toggleSaveRecipe(recipeOfDay);
-
-        setSavedState((prev) => !prev); // Trigger immediate re-render
-    };
 
     return (
         // with <> function can return multiple things without creating extra <div>    
@@ -191,60 +147,7 @@ function RecipeOfTheDay() {
                     recipeType="auto"
                     showSaveButton={true}
                     defaultCategory={recipeOfDay.strCategory || 'Cooking'}
-                >
-                    {/* BAKING CONVERSION CHEAT SHEET */}
-                    <div className="alert alert-info rounded-4 mb-4">
-                        <h5 className="mb-3 fw-bold">
-                            Kitchen Conversions at a Glance
-                        </h5>
-
-                        <div className="row g-3">
-
-                            {/* WEIGHT & VOLUME */}
-                            <div className="col-12 col-md-6">
-                                <strong>Weight &amp; Volume</strong>
-
-                                <ul className="mb-0 mt-2 ps-3">
-                                    <li>
-                                        1 oz (Weight) ={' '}
-                                        <strong>28.35 g</strong>
-                                    </li>
-
-                                    <li>
-                                        1 fl oz (Liquid) ={' '}
-                                        <strong>29.6 ml</strong>
-                                    </li>
-
-                                    <li>
-                                        1 cup (Liquid) ={' '}
-                                        <strong>240 ml</strong>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            {/* CUP CONVERSIONS */}
-                            <div className="col-12 col-md-6">
-                                <strong>1 Cup equals</strong>
-
-                                <ul className="mb-0 mt-2 ps-3">
-                                    <li>
-                                        Flour = <strong>125 g</strong>
-                                    </li>
-
-                                    <li>
-                                        Sugar = <strong>200 g</strong>
-                                    </li>
-
-                                    <li>
-                                        Butter / Cream Cheese ={' '}
-                                        <strong>225–227 g</strong>
-                                    </li>
-                                </ul>
-                            </div>
-
-                        </div>
-                    </div>
-                </RecipeDetailModal>
+                />
             )}
         </>
     );

@@ -18,8 +18,7 @@ import MyCookbook from './pages/MyCookbook';
 {/* a component called App */}
 {/* contains applications's overall layout */}
 function App() {
-  const [selectedRecipeId, setSelectedRecipeId] = useState(null);
-
+  
   // Handler when user clicks "View" on a card inside MyCookbook
   const handleSelectRecipeFromCookbook = (idMeal) => {
     setSelectedRecipeId(idMeal);
