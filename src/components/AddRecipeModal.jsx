@@ -16,8 +16,14 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
     // the form that is then changed is now at the beginning the same as the empty one
     const [customRecipeForm, setCustomRecipeForm] = useState(emptyRecipeForm);
 
+    const [formError, setFormError] = useState('');
+    const [formSuccess, setFormSuccess] = useState('');
+
     // if user clicks Edit then the recipeToEdit contains the strMeal, Category, ect. and through this effect that is converted back into the format the form expects title, category, area, ...
     useEffect(() => {
+        setFormError('');
+        setFormSuccess('');
+        
         // if we are editing an existing recipe
         if (recipeToEdit) {
             // Convert the stored recipe back into the format
@@ -84,13 +90,31 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
 
         if (!file) return;
 
+        setFormError('');
+        setFormSuccess('');
+
+        if (!file.type.startsWith('image/')) {
+            setFormError('Please select a valid image file.');
+            e.target.value = '';
+            return;
+        }
+
         const reader = new FileReader();
 
         reader.onloadend = () => {
-            setCustomRecipeForm({
-                ...customRecipeForm,
+            if (typeof reader.result !== 'string') {
+                setFormError('The image could not be loaded. Please try another file.');
+                return;
+            }
+
+            setCustomRecipeForm((previousForm) => ({
+                ...previousForm,
                 image: reader.result
-            });
+            }));
+        };
+
+        reader.onerror = () => {
+            setFormError('Failed to read the image. Please try another file.');
         };
 
         reader.readAsDataURL(file);
@@ -99,7 +123,30 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
     const handleSaveCustomRecipe = (e) => {
         e.preventDefault();
 
-        if (!customRecipeForm.title.trim()) return;
+        setFormError('');
+        setFormSuccess('');
+
+        if (!customRecipeForm.title.trim()) {
+            setFormError('Please enter a recipe title.');
+            return;
+        }
+
+        // Check that the instructions are not empty.
+        if (!customRecipeForm.instructions.trim()) {
+            setFormError('Please enter the cooking instructions.');
+            return;
+        }
+
+        // Check that at least one ingredient has been entered.
+        const hasIngredient = customRecipeForm.ingredients.some(
+            (ingredient) => ingredient.ingredient.trim() !== ''
+        );
+
+        if (!hasIngredient) {
+            setFormError('Please add at least one ingredient.');
+            return;
+        }
+
 
         const recipeData = {
             ...customRecipeForm,
@@ -109,12 +156,26 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
             idMeal: recipeToEdit?.idMeal
         };
 
-        const saved = saveCustomRecipe(recipeData);
+        try {
+            const saved = saveCustomRecipe(recipeData);
 
-        if (saved) {
+            if (!saved) {
+                setFormError(
+                    'The recipe could not be saved. Please try again.'
+                );
+                return;
+            }
+
             onSaved();
-            onClose();
+            setFormSuccess('Recipe saved successfully!');
             setCustomRecipeForm(emptyRecipeForm);
+            onClose();
+        } catch (error) {
+            console.error('Error saving custom recipe:', error);
+
+            setFormError(
+                'Something went wrong while saving your recipe. Please try again.'
+            );
         }
     };
 
@@ -148,6 +209,18 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
                                 overflowY: 'auto'
                             }}
                         >
+
+                            {formError && (
+                                <div className="alert alert-danger" role="alert">
+                                    {formError}
+                                </div>
+                            )}
+
+                            {formSuccess && (
+                                <div className="alert alert-success" role="status">
+                                    {formSuccess}
+                                </div>
+                            )}
 
                             {/* Recipe Title */}
                             <div className="mb-3">

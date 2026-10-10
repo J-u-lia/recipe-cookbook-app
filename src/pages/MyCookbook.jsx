@@ -17,6 +17,9 @@ function MyCookbook() {
     // which recipe is curretnly looked at
     const [selectedRecipe, setSelectedRecipe] = useState(null);
 
+    const [detailError, setDetailError] = useState('');
+    const [loadingDetailsId, setLoadingDetailsId] = useState(null);
+
     // Load saved cookbook from localStorage and put it into react state
     const loadCookbook = () => {
         const stored = localStorage.getItem('my_cookbook'); // checks if sth is stored under key my_cookbook
@@ -27,6 +30,7 @@ function MyCookbook() {
             } catch (err) {
                 // if it fails then print error message in console
                 console.error('Error parsing cookbook from localStorage:', err);
+                setSavedRecipes([]);
             }
         } else {
             // if there is nothing stored then cookbook is empty array
@@ -78,24 +82,51 @@ function MyCookbook() {
         // Find the recipe in our cookbook using its ID.
         const meal = savedRecipes.find((item) => item.idMeal === idMeal);
         
+        setDetailError('');
+
+        // Handle a recipe that cannot be found in the cookbook.
+        if (!meal) {
+            setDetailError(
+                'This recipe could not be found in your cookbook. Please refresh the page and try again.'
+            );
+            return;
+        }
+
         // if it is a user-created recipe then load it directly from storage
         if (meal?.isCustom) {
             setSelectedRecipe(meal);
             return;
         }
+
+        setLoadingDetailsId(idMeal);
+
         // if not then fetch full details from TheMealDB API
         try {
             // try to fetch the data from the URL of the API with lookup.php because of detail
             const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`);
-            const data = await response.json(); // translate into JS object
-            // if there is data for the meal with the ID it fetched the details and there is a first recipe
-            if (data.meals && data.meals[0]) {
-                // then the first returned meal is the selected recipe, no ingredient is checked, serving size 4 
-                setSelectedRecipe(data.meals[0]);
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
             }
+
+            const data = await response.json(); // translate into JS object
+            
+            // if there is data for the meal with the ID it fetched the details and there is a first recipe
+            // then the first returned meal is the selected recipe, no ingredient is checked, serving size 4 
+            if (!data.meals || !data.meals[0]) {
+                throw new Error('Recipe not found.');
+            }
+            
+            setSelectedRecipe(data.meals[0]);
         } catch (error) {
             // if sth goes wrong fetching then display error in console
             console.error('Error fetching recipe details:', error);
+
+            setDetailError(
+                'We could not load this recipe right now. Please check your connection and try again.'
+            );
+        } finally {
+            setLoadingDetailsId(null);
         }
     };
 
@@ -228,7 +259,13 @@ function MyCookbook() {
 
                 </div>
             )}
-        
+
+            {detailError && (
+                <div className="alert alert-danger mb-4" role="alert">
+                    {detailError}
+                </div>
+            )}
+
             {/* EMPTY STATE */}
             {/* if nothing is saved in the filteredRecipes (now this checikng and not savedRecipes anymore because filteredRecipes contains recipes from the currently selected section and categorx) then display this message */}
             {filteredRecipes.length === 0 ? (
@@ -302,9 +339,23 @@ function MyCookbook() {
                                     <div className="d-flex gap-2 mt-3">
                                         <button
                                             onClick={() => fetchRecipeDetails(meal.idMeal)}
+                                            disabled={loadingDetailsId !== null}
                                             className="btn btn-outline-dark btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
-                                        >       
-                                            <Eye size={16} /> View Recipe
+                                        >
+                                            {loadingDetailsId === meal.idMeal ? (
+                                                <>
+                                                    <span
+                                                        className="spinner-border spinner-border-sm"
+                                                        role="status"
+                                                        aria-hidden="true"
+                                                    />
+                                                    Loading...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Eye size={16} /> View Recipe
+                                                </>
+                                            )}
                                         </button>
 
                                         <button
