@@ -71,8 +71,9 @@ function Home() {
                             bootstrap class for badges, background white, text color dark, no underlining, padding horizontally, padding vertically, corners rounded, little shadow
                             css class
                             and then the cateogry's name is displayed */}
-                        {categories.map((cat, index) => (
-                            <Link key={index} to={cat.path} className="badge bg-white text-dark text-decoration-none px-3 py-2 rounded-pill shadow-sm category-pill">
+                        {/* the logic of categorie mapping can be written easier because the category already has a unique path and that can be used as the key */}
+                        {categories.map((cat) => (
+                            <Link key={cat.path} to={cat.path} className="badge bg-white text-dark text-decoration-none px-3 py-2 rounded-pill shadow-sm category-pill">
                                 {cat.name}
                             </Link>
                         ))}

@@ -6,6 +6,7 @@ import './Baking.css';  // style sheet
 // helper function for cookbook
 import { toggleSaveRecipe, isRecipeSaved, scaleMeasure } from '../utils/cookbookHelper';
 import { useSearchParams } from 'react-router-dom';
+import RecipeDetailModal from '../components/RecipeDetailModal';
 
 // creating the React component Baking which can be displayed
 function Baking() {
@@ -214,293 +215,66 @@ function Baking() {
                 below that the ingredient list is printed with boxes to check - if checked then crossed out if not hten not
                 below that the instructions how to make that meal are written */}
             {selectedRecipe && (
-                <div
-                    className="modal show d-block"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
+                <RecipeDetailModal
+                    recipe={selectedRecipe}
+                    onClose={() => setSelectedRecipe(null)}
+                    recipeType="baking"
+                    showSaveButton={true}
+                    defaultCategory="Baking"
                 >
-                    <div className="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
-                        <div className="modal-content rounded-4 border-0 shadow">
+                    {/* BAKING CONVERSION CHEAT SHEET */}
+                    <div className="alert alert-info rounded-4 mb-4">
+                        <h5 className="mb-3 fw-bold">
+                            Kitchen Conversions at a Glance
+                        </h5>
 
-                            {/* MODAL HEADER */}
-                            <div className="modal-header border-0 bg-light p-4 d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h3 className="modal-title fw-bold">
-                                        {selectedRecipe.strMeal}
-                                    </h3>
-                                </div>
+                        <div className="row g-3">
 
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    onClick={() => setSelectedRecipe(null)}
-                                    aria-label="Close"
-                                ></button>
+                            {/* WEIGHT & VOLUME */}
+                            <div className="col-12 col-md-6">
+                                <strong>Weight &amp; Volume</strong>
+
+                                <ul className="mb-0 mt-2 ps-3">
+                                    <li>
+                                        1 oz (Weight) ={' '}
+                                        <strong>28.35 g</strong>
+                                    </li>
+
+                                    <li>
+                                        1 fl oz (Liquid) ={' '}
+                                        <strong>29.6 ml</strong>
+                                    </li>
+
+                                    <li>
+                                        1 cup (Liquid) ={' '}
+                                        <strong>240 ml</strong>
+                                    </li>
+                                </ul>
                             </div>
 
-                            {/* MODAL BODY */}
-                            <div className="modal-body p-4">
+                            {/* CUP CONVERSIONS */}
+                            <div className="col-12 col-md-6">
+                                <strong>1 Cup equals</strong>
 
-                                {/* IMAGE + BAKING CONTROLS */}
-                                <div className="row g-4 mb-4">
+                                <ul className="mb-0 mt-2 ps-3">
+                                    <li>
+                                        Flour = <strong>125 g</strong>
+                                    </li>
 
-                                    {/* RECIPE IMAGE */}
-                                    <div className="col-md-5">
-                                        <img
-                                            src={selectedRecipe.strMealThumb}
-                                            alt={selectedRecipe.strMeal}
-                                            className="recipe-detail-img img-fluid rounded-4 shadow-sm w-100"
-                                        />
+                                    <li>
+                                        Sugar = <strong>200 g</strong>
+                                    </li>
 
-                                        {/* SAVE / LIKE BUTTON */}
-                                        <div className="d-flex justify-content-center mt-3">
-                                            <button
-                                                type="button"
-                                                onClick={handleToggleSave}
-                                                className={`btn ${
-                                                    isRecipeSaved(selectedRecipe.idMeal)
-                                                        ? 'btn-danger'
-                                                        : 'btn-outline-danger'
-                                                } rounded-pill px-4 fw-semibold d-flex align-items-center gap-2`}
-                                            >
-                                                <Heart
-                                                    size={18}
-                                                    fill={
-                                                        isRecipeSaved(selectedRecipe.idMeal)
-                                                            ? 'currentColor'
-                                                            : 'none'
-                                                    }
-                                                />
-
-                                                {isRecipeSaved(selectedRecipe.idMeal)
-                                                    ? 'Saved'
-                                                    : 'Save'}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* SERVING SIZE + CATEGORY */}
-                                    <div className="col-md-7">
-
-                                        {/* BAKING BATCH / SERVING SIZE */}
-                                        <div className="p-3 bg-light rounded-4 border mb-3">
-                                            <div className="d-flex align-items-center justify-content-between">
-
-                                                <div className="d-flex align-items-center gap-2">
-                                                    <Users
-                                                        size={20}
-                                                        className="text-primary"
-                                                    />
-
-                                                    <span className="fw-bold">
-                                                        Baking Batch Size:
-                                                    </span>
-                                                </div>
-
-                                                <div className="d-flex align-items-center gap-2">
-
-                                                    {/* MINUS */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setServings((prev) =>
-                                                                Math.max(1, prev - 1)
-                                                            )
-                                                        }
-                                                        className="btn btn-outline-dark serving-btn"
-                                                    >
-                                                        <Minus size={16} />
-                                                    </button>
-
-                                                    {/* CURRENT SERVINGS */}
-                                                    <span className="fw-bold fs-5 px-2">
-                                                        {servings}
-                                                    </span>
-
-                                                    {/* PLUS */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setServings((prev) => prev + 1)
-                                                        }
-                                                        className="btn btn-outline-dark serving-btn"
-                                                    >
-                                                        <Plus size={16} />
-                                                    </button>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* CATEGORY + ORIGIN */}
-                                        <div className="d-flex gap-2 flex-wrap">
-
-                                            <span className="badge baking-category-small px-3 py-2">
-                                                Category: {selectedRecipe.strCategory || 'Baking'}
-                                            </span>
-
-                                            <span className="badge bg-secondary-subtle text-secondary px-3 py-2">
-                                                Origin: {selectedRecipe.strArea || 'International'}
-                                            </span>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                {/* BAKING CONVERSION CHEAT SHEET */}
-                                <div className="alert alert-info rounded-4 mb-4">
-                                    <h5 className="mb-3 fw-bold">
-                                        Kitchen Conversions at a Glance
-                                    </h5>
-
-                                    <div className="row g-3">
-
-                                        {/* WEIGHT & VOLUME */}
-                                        <div className="col-12 col-md-6">
-                                            <strong>Weight &amp; Volume</strong>
-
-                                            <ul className="mb-0 mt-2 ps-3">
-                                                <li>
-                                                    1 oz (Weight) ={' '}
-                                                    <strong>28.35 g</strong>
-                                                </li>
-
-                                                <li>
-                                                    1 fl oz (Liquid) ={' '}
-                                                    <strong>29.6 ml</strong>
-                                                </li>
-
-                                                <li>
-                                                    1 cup (Liquid) ={' '}
-                                                    <strong>240 ml</strong>
-                                                </li>
-                                            </ul>
-                                        </div>
-
-                                        {/* CUP CONVERSIONS */}
-                                        <div className="col-12 col-md-6">
-                                            <strong>1 Cup equals</strong>
-
-                                            <ul className="mb-0 mt-2 ps-3">
-                                                <li>
-                                                    Flour = <strong>125 g</strong>
-                                                </li>
-
-                                                <li>
-                                                    Sugar = <strong>200 g</strong>
-                                                </li>
-
-                                                <li>
-                                                    Butter / Cream Cheese ={' '}
-                                                    <strong>225–227 g</strong>
-                                                </li>
-                                            </ul>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-
-                                {/* INGREDIENTS + BAKING INSTRUCTIONS */}
-                                <div className="row g-4">
-
-                                    {/* INGREDIENT CHECKLIST */}
-                                    <div className="col-md-5">
-                                        <h5 className="fw-bold mb-3">
-                                            Ingredients Checklist
-                                        </h5>
-
-                                        <ul className="list-group list-group-flush mb-4">
-
-                                            {getIngredientsList(selectedRecipe).map(
-                                                (item, index) => {
-
-                                                    const displayMeasure = scaleMeasure(
-                                                        item.measure,
-                                                        servings,
-                                                        4
-                                                    );
-
-                                                    return (
-                                                        <li
-                                                            key={index}
-                                                            onClick={() =>
-                                                                toggleIngredientCheck(index)
-                                                            }
-                                                            className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
-                                                            style={{ cursor: 'pointer' }}
-                                                        >
-
-                                                            {/* CHECKBOX */}
-                                                            {checkedIngredients[index] ? (
-                                                                <CheckSquare
-                                                                    size={20}
-                                                                    className="text-success flex-shrink-0"
-                                                                />
-                                                            ) : (
-                                                                <Square
-                                                                    size={20}
-                                                                    className="text-muted flex-shrink-0"
-                                                                />
-                                                            )}
-
-                                                            {/* INGREDIENT */}
-                                                            <span
-                                                                className={
-                                                                    checkedIngredients[index]
-                                                                        ? 'text-decoration-line-through text-muted'
-                                                                        : ''
-                                                                }
-                                                            >
-                                                                <strong>
-                                                                    {displayMeasure}
-                                                                </strong>{' '}
-                                                                {item.ingredient}
-                                                            </span>
-
-                                                        </li>
-                                                    );
-                                                }
-                                            )}
-
-                                        </ul>
-                                    </div>
-
-                                    {/* BAKING INSTRUCTIONS */}
-                                    <div className="col-md-7">
-                                        <h5 className="fw-bold mb-3">
-                                            Baking Instructions
-                                        </h5>
-
-                                        <p
-                                            className="text-secondary lh-lg"
-                                            style={{ whiteSpace: 'pre-line' }}
-                                        >
-                                            {selectedRecipe.strInstructions}
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            {/* MODAL FOOTER */}
-                            <div className="modal-footer border-0 bg-light p-3 d-flex justify-content-end">
-
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary px-4 fw-semibold rounded-3"
-                                    onClick={() => setSelectedRecipe(null)}
-                                >
-                                    Close
-                                </button>
-
+                                    <li>
+                                        Butter / Cream Cheese ={' '}
+                                        <strong>225–227 g</strong>
+                                    </li>
+                                </ul>
                             </div>
 
                         </div>
                     </div>
-                </div>
+                </RecipeDetailModal>
             )}
         </div>
     );
