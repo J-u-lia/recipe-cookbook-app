@@ -1,12 +1,44 @@
 // Helper function to toggle saving a recipe to localStorage
 // this way it can be reused and not written twice
 
+const isCookbookRecipe = (recipe) =>
+    recipe !== null &&
+    typeof recipe === 'object' &&
+    (typeof recipe.idMeal === 'string' || typeof recipe.idMeal === 'number') &&
+    typeof recipe.strMeal === 'string';
+
+export const getCookbookRecipes = () => {
+    try {
+        const stored = localStorage.getItem('my_cookbook');
+        if (!stored) return [];
+
+        const recipes = JSON.parse(stored);
+        if (!Array.isArray(recipes)) {
+            console.error('Cookbook data in localStorage is not an array.');
+            return [];
+        }
+
+        const validRecipes = recipes.filter(isCookbookRecipe);
+        if (validRecipes.length !== recipes.length) {
+            console.error('Cookbook data contains invalid recipes; invalid entries were ignored.');
+        }
+
+        return validRecipes.map((recipe) => ({
+            ...recipe,
+            idMeal: String(recipe.idMeal)
+        }));
+    } catch (error) {
+        console.error('Failed to read cookbook from localStorage:', error);
+        return [];
+    }
+};
+
 // exports the function - variable called toggleSaveRecipe that contains the function
 export const toggleSaveRecipe = (recipe) => {
     // the argument the function receives is the recipe the user wants to save or remove
     // inside the localStorage of the Browser the values under the key my_cookbook are saved even with page refresh, if nothings in there then empty array
     // but they need to be converted because browser saves them as jsons and not as JS opjects/arrays
-    const stored = JSON.parse(localStorage.getItem('my_cookbook') || '[]');
+    const stored = getCookbookRecipes();
     // check if the recipe already exists there 
     // with .some() it can be chekced if at least one item in an array satisfies a condition
     // looks if there is any item with the id = ... stored
@@ -35,7 +67,7 @@ export const toggleSaveRecipe = (recipe) => {
 // second helper function to check if this recipe is currently saved with input the idMeal
 export const isRecipeSaved = (idMeal) => {
     // it reads the localStorage, gets the cookbook and converts JSON intro array
-    const stored = JSON.parse(localStorage.getItem('my_cookbook') || '[]');
+    const stored = getCookbookRecipes();
     // checks if at least one saved recipe has this ID
     return stored.some((item) => item.idMeal === idMeal);
 };
@@ -45,7 +77,7 @@ export const isRecipeSaved = (idMeal) => {
 export const saveCustomRecipe = (recipeData) => {
     try {
         // existing gets all the recipies curretnly in the cookbook saved if there is nothing then empty array
-        const existing = JSON.parse(localStorage.getItem('my_cookbook')) || [];
+        const existing = getCookbookRecipes();
 
         // the cutsom recipe form data has to be the same structure as that recipes from TheMealDB because then MyCookbook can treat API recipes and the custom ones in the same way
         const newRecipe = {

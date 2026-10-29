@@ -6,24 +6,12 @@ import { Bookmark, Heart, Trash2, Eye, PlusCircle } from 'lucide-react';   // ic
 import AddRecipeModal from '../components/AddRecipeModal';
 import './MyCookbook.css';
 import RecipeDetailModal from '../components/RecipeDetailModal';
-
-function readCookbook() {
-    const stored = localStorage.getItem('my_cookbook');
-    if (!stored) return [];
-
-    try {
-        const recipes = JSON.parse(stored);
-        return Array.isArray(recipes) ? recipes : [];
-    } catch (error) {
-        console.error('Error parsing cookbook from localStorage:', error);
-        return [];
-    }
-}
+import { getCookbookRecipes } from '../utils/cookbookHelper';
 
 // React Component
 function MyCookbook() {
     // variable to store saved Recipes data and call them - at beginning no recipe saved
-    const [savedRecipes, setSavedRecipes] = useState(readCookbook);
+    const [savedRecipes, setSavedRecipes] = useState(getCookbookRecipes);
     // storing which cookbook filter is currently selected
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [cookbookSection, setCookbookSection] = useState('liked');
@@ -33,7 +21,7 @@ function MyCookbook() {
     const [detailError, setDetailError] = useState('');
     const [loadingDetailsId, setLoadingDetailsId] = useState(null);
 
-    const loadCookbook = () => setSavedRecipes(readCookbook());
+    const loadCookbook = () => setSavedRecipes(getCookbookRecipes());
 
     // Remove recipe from cookbook
     const removeRecipe = (idMeal) => {
