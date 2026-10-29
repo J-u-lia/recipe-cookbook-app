@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { saveCustomRecipe } from '../utils/cookbookHelper';
 
+const MAX_IMAGE_SIZE_BYTES = 1024 * 1024;
+
 function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
     // form if there wasn't a recipe in there before
     const emptyRecipeForm = {
@@ -78,6 +80,12 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
 
         if (!file.type.startsWith('image/')) {
             setFormError('Please select a valid image file.');
+            e.target.value = '';
+            return;
+        }
+
+        if (file.size > MAX_IMAGE_SIZE_BYTES) {
+            setFormError('Please choose an image no larger than 1 MB to save space in your browser.');
             e.target.value = '';
             return;
         }
@@ -293,6 +301,9 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
                                         className="form-control rounded-3"
                                         onChange={handleImageUpload}
                                     />
+                                    <small className="form-text text-muted">
+                                        Uploaded images must be 1 MB or smaller because recipes are saved in this browser.
+                                    </small>
                                 </div>
 
                             </div>
