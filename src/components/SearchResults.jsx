@@ -42,6 +42,14 @@ function SearchResults() {
                 fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(term)}`),
                 fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?a=${encodeURIComponent(term)}`)
             ]);
+
+            const failedResponse = [nameRes, ingRes, catRes, areaRes].find(
+                (response) => !response.ok
+            );
+            if (failedResponse) {
+                throw new Error(`Recipe search failed: ${failedResponse.status}`);
+            }
+
             // convert everything in JS Object with Promise.all()
             const [nameData, ingData, catData, areaData] = await Promise.all([
                 nameRes.json(),
@@ -81,18 +89,44 @@ function SearchResults() {
             // if there are missing recipes do more API requests
             if (uniqueMissingIds.length > 0) {
                 // one API request for every missing recipe
-                const detailPromises = uniqueMissingIds.map((id) =>
-                    fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`)
-                        .then((res) => res.json())  // convert to JSON
-                        .then((data) => data.meals?.[0])    // get first meal from response
-                        .catch(() => null)  // if sth fails return null instead
-                );
-                // it waits until all detail requests have finished
-                const detailedMeals = await Promise.all(detailPromises);
-                // then adds every successfully retrieved meal to the Map. 
-                detailedMeals.forEach((meal) => {
-                    if (meal) mealMap.set(meal.idMeal, meal);
+                const detailPromises = uniqueMissingIds.map(async (id) => {
+                    const response = await fetch(
+                        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
+                    );
+                    if (!response.ok) {
+                        throw new Error(`Recipe detail request failed: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    return data.meals?.[0] || null;
                 });
+                // it waits until all detail requests have finished
+                const detailResults = await Promise.allSettled(detailPromises);
+                let incompleteDetails = false;
+
+                // then adds every successfully retrieved meal to the Map. 
+                detailResults.forEach((result, index) => {
+                    if (result.status === 'rejected') {
+                        console.error(
+                            `Error fetching recipe details for ${uniqueMissingIds[index]}:`,
+                            result.reason
+                        );
+                        incompleteDetails = true;
+                        return;
+                    }
+
+                    if (result.value) {
+                        mealMap.set(result.value.idMeal, result.value);
+                    } else {
+                        incompleteDetails = true;
+                    }
+                });
+
+                if (incompleteDetails) {
+                    setDetailError(
+                        'Some matching recipe details could not be loaded. The results may be incomplete.'
+                    );
+                }
             }
 
             // Convert map to array - map.values() returns all stored recipes

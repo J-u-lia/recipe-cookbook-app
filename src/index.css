@@ -6,7 +6,7 @@
   --border: #ebe6e1;
 
   --sage: #9caf9a;
-  --sage-dark: #718570;
+  --sage-dark: #536b51;
   --sage-light: #edf3eb;
 
   --rose: #d9a7a7;
@@ -86,14 +86,14 @@ p {
 }
 
 .btn-primary {
-  background-color: var(--sage) !important;
-  border-color: var(--sage) !important;
+  background-color: var(--sage-dark) !important;
+  border-color: var(--sage-dark) !important;
   color: #fff !important;
 }
 
 .btn-primary:hover {
-  background-color: var(--sage-dark) !important;
-  border-color: var(--sage-dark) !important;
+  background-color: #4a6149 !important;
+  border-color: #4a6149 !important;
 }
 
 .btn-outline-primary {
@@ -123,7 +123,7 @@ p {
 }
 
 .bg-primary {
-  background-color: var(--sage) !important;
+  background-color: var(--sage-dark) !important;
 }
 
 .bg-light {
@@ -160,6 +160,16 @@ p {
   background-color: #c8ad96 !important;
   color: #4f3f34 !important;
   transform: translateY(-1px);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #294834;
+  outline-offset: 3px;
 }
 
 @media (max-width: 1024px) {

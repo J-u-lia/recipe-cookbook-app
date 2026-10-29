@@ -71,7 +71,7 @@ function App() {
       </nav>
 
       {/* Main Screen Views */}
-      <div className="container">
+      <main className="container">
         <Routes>
           {/* route tells you what will be displayed there
               so because / is Home https://localhost:5173/ will display Home
@@ -81,7 +81,7 @@ function App() {
           <Route path="/baking" element={<Baking />} />
           <Route path="/my-cookbook" element={<MyCookbook />} />
         </Routes>
-      </div>
+      </main>
     </BrowserRouter>
   );
 }
