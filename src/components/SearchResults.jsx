@@ -10,10 +10,12 @@ function SearchResults() {
     const [recipes, setRecipes] = useState([]); // stores recipes returned from API search
     const [selectedRecipe, setSelectedRecipe] = useState(null); // stores recipe user has currently selected
     const [loading, setLoading] = useState(false);  // stores if the application is currently loading
+    const [loadingDetailsId, setLoadingDetailsId] = useState(null);
     const [searched, setSearched] = useState(false);    // stores if the user has searched sth or not so that the rendering works correctly when coming to home page
     
     // for error handling
     const [error, setError] = useState('');
+    const [detailError, setDetailError] = useState('');
 
     // runs when user submits search - is async cause it could take time to search in the API 
     const handleSearchSubmit = async (e) => {
@@ -28,6 +30,7 @@ function SearchResults() {
 
         setLoading(true);   // if there is sth typed then state is loading
         setError('');
+        setDetailError('');
         setSelectedRecipe(null);    // close any recipes that might currently be open
         setSearched(true);  // remember that a search has been done
 
@@ -132,9 +135,11 @@ function SearchResults() {
 
     // this handles when the user clicks the View Recipe
     const handleSelectRecipe = async (meal) => {
+        setDetailError('');
+
         // some search results already contain full recipe data if strInstructions doesn't exist then it knows it need to make another API request to get full recipe
         if (!meal.strInstructions) {
-            setLoading(true);   // start loading
+            setLoadingDetailsId(meal.idMeal);
             try {
                 // fetch the full recipe details with lookup.php with the ID
                 const res = await fetch(
@@ -148,15 +153,18 @@ function SearchResults() {
                 // convert it 
                 const data = await res.json();
                 // to make sure api actually returned a meal and then store the full recipe as the selected recipe
-                if (data.meals && data.meals[0]) {
-                    setSelectedRecipe(data.meals[0]);
+                if (!data.meals?.[0]) {
+                    throw new Error('Recipe details were not returned by the API.');
                 }
+
+                setSelectedRecipe(data.meals[0]);
             } catch (err) {
-                // error message if st goes wrong
                 console.error('Error fetching recipe details:', err);
+                setDetailError(
+                    'We could not load this recipe right now. Please try again.'
+                );
             } finally {
-                // stop loading
-                setLoading(false);
+                setLoadingDetailsId(null);
             }
         } else {
             // if meal already has full details then no API request needed
@@ -211,9 +219,23 @@ function SearchResults() {
                                         <button
                                             type="button"
                                             onClick={() => handleSelectRecipe(meal)}
+                                            disabled={loadingDetailsId !== null}
                                             className="btn btn-outline-dark btn-sm fw-semibold flex-grow-1 rounded-3 d-flex align-items-center justify-content-center gap-1"
                                         >
-                                            <Eye size={16} /> View Recipe
+                                            {loadingDetailsId === meal.idMeal ? (
+                                                <>
+                                                    <span
+                                                        className="spinner-border spinner-border-sm"
+                                                        role="status"
+                                                        aria-hidden="true"
+                                                    />
+                                                    Loading...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Eye size={16} /> View Recipe
+                                                </>
+                                            )}
                                         </button>
                                     </div>
                                 </div>
@@ -226,6 +248,12 @@ function SearchResults() {
             {error && (
                 <div className="alert alert-danger mt-3" role="alert">
                     {error}
+                </div>
+            )}
+
+            {detailError && (
+                <div className="alert alert-danger mt-3" role="alert">
+                    {detailError}
                 </div>
             )}
 
