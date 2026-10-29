@@ -110,30 +110,30 @@ function MyCookbook() {
         }
     };
 
-    // it is now possible to decide Liked vs My Recipes and then the category filter is applied
-    // create new array with recipes that match the selectedd category
-    const filteredRecipes = savedRecipes
+    const sectionRecipes = savedRecipes
         .filter((meal) =>
             cookbookSection === 'liked'
                 ? !meal.isCustom
                 : meal.isCustom
-        )
-        .filter((meal) => {
-            // if user is at category all then every saved recipe is displayed
-            if (selectedCategory === 'All') return true;
-            // if it is at baking then onl the recipes in baking or desserts
-            if (selectedCategory === 'Baking') {
-                return (
-                    meal.strCategory === 'Dessert' ||
-                    meal.strCategory === 'Baking'
-                );
-            }
-            // if it is neither dessert nor baking htne it is cooking
+        );
+
+    // Apply the category filter to the selected cookbook section.
+    const filteredRecipes = sectionRecipes.filter((meal) => {
+        // if user is at category all then every saved recipe is displayed
+        if (selectedCategory === 'All') return true;
+        // if it is at baking then onl the recipes in baking or desserts
+        if (selectedCategory === 'Baking') {
             return (
-                meal.strCategory !== 'Dessert' &&
-                meal.strCategory !== 'Baking'
+                meal.strCategory === 'Dessert' ||
+                meal.strCategory === 'Baking'
             );
-        });
+        }
+        // if it is neither dessert nor baking htne it is cooking
+        return (
+            meal.strCategory !== 'Dessert' &&
+            meal.strCategory !== 'Baking'
+        );
+    });
 
     const [showAddModal, setShowAddModal] = useState(false);    // controls if the create custom recipe is visible or not
     const [recipeToEdit, setRecipeToEdit] = useState(null);
@@ -190,10 +190,11 @@ function MyCookbook() {
             </div>
 
             {/* CATEGORY FILTER Buttons - one for All, Cooking, Baking */}
-            {filteredRecipes.length > 0 && (
+            {(sectionRecipes.length > 0 || cookbookSection === 'created') && (
 
                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
 
+                    {sectionRecipes.length > 0 && (
                     <div className="d-flex gap-2">
                         {/* create array with possible button options and give them the react key
                         style them different if selected */}
@@ -211,6 +212,7 @@ function MyCookbook() {
                             </button>
                         ))}
                     </div>
+                    )}
                     {/* if user is in section created then there is the Add my recipe button availabke and also the button to clear the recipes this labe changes when in liked*/}
                     <div className="d-flex gap-2">
                         {cookbookSection === 'created' && (
@@ -226,7 +228,7 @@ function MyCookbook() {
                             </button>
                         )}
 
-                        {filteredRecipes.length > 0 && (
+                        {sectionRecipes.length > 0 && (
                             <button
                                 onClick={clearCurrentSection}
                                 className="btn btn-outline-danger rounded-pill px-3 fw-semibold d-flex align-items-center gap-2"
@@ -255,32 +257,42 @@ function MyCookbook() {
                         <>
                             <Heart size={48} className="text-muted mb-3 opacity-50" />
                             <h4 className="fw-bold text-dark">
-                                No Liked Recipes Yet
+                                {sectionRecipes.length === 0
+                                    ? 'No Liked Recipes Yet'
+                                    : `No ${selectedCategory} Recipes`}
                             </h4>
                             <p className="text-muted mb-0">
-                                You haven't liked any recipes yet. Click the heart on a recipe to save it here!
+                                {sectionRecipes.length === 0
+                                    ? "You haven't liked any recipes yet. Click the heart on a recipe to save it here!"
+                                    : `You don't have any liked ${selectedCategory.toLowerCase()} recipes. Choose another category or select All.`}
                             </p>
                         </>
                     ) : (
                         <>
                             <PlusCircle size={48} className="text-muted mb-3 opacity-50" />
                             <h4 className="fw-bold text-dark">
-                                No Recipes Yet
+                                {sectionRecipes.length === 0
+                                    ? 'No Recipes Yet'
+                                    : `No ${selectedCategory} Recipes`}
                             </h4>
                             <p className="text-muted mb-3">
-                                Create your own recipe and it will appear here.
+                                {sectionRecipes.length === 0
+                                    ? 'Create your own recipe and it will appear here.'
+                                    : `You don't have any ${selectedCategory.toLowerCase()} recipes. Choose another category or select All.`}
                             </p>
 
-                            <button
-                                onClick={() => {
-                                    setRecipeToEdit(null);
-                                    setShowAddModal(true);
-                                }}
-                                className="btn btn-primary rounded-pill px-4 fw-semibold"
-                            >
-                                <PlusCircle size={18} className="me-1" />
-                                Add a Recipe
-                            </button>
+                            {sectionRecipes.length === 0 && (
+                                <button
+                                    onClick={() => {
+                                        setRecipeToEdit(null);
+                                        setShowAddModal(true);
+                                    }}
+                                    className="btn btn-primary rounded-pill px-4 fw-semibold"
+                                >
+                                    <PlusCircle size={18} className="me-1" />
+                                    Add a Recipe
+                                </button>
+                            )}
                         </>
                     )}
                 </div>
