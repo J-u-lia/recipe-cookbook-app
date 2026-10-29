@@ -160,6 +160,7 @@ function RecipeOfTheDay() {
             {/* FULL RECIPE MODAL */}
             {showModal && recipeOfDay && (
                 <RecipeDetailModal
+                    key={recipeOfDay.idMeal}
                     recipe={recipeOfDay}
                     onClose={() => setShowModal(false)}
                     recipeType="auto"

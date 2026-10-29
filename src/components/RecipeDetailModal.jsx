@@ -1,7 +1,7 @@
 // function that includes all the logic for the different recipe detail modals
 
 // import the functions used
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 // improt icons
 import { Heart, Minus, Plus, PlusCircle, Trash2, Users, CheckSquare, Square } from 'lucide-react';
 // improt helper functions
@@ -25,12 +25,6 @@ function RecipeDetailModal({
     const [servings, setServings] = useState(4);
     const [checkedIngredients, setCheckedIngredients] = useState({});
     const [, setSaveVersion] = useState(0);
-
-    // when the user opens a different recipe then reset the serving size and clear the checkd ingredients
-    useEffect(() => {
-        setServings(4);
-        setCheckedIngredients({});
-    }, [recipe?.idMeal]);
 
     // if there is no recipe selected then return
     if (!recipe) return null;

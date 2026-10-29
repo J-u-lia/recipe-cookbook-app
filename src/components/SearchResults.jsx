@@ -142,7 +142,7 @@ function SearchResults() {
                 );
 
                 if (!res.ok) {
-                    throw new Error(`API request failed: ${response.status}`);
+                    throw new Error(`API request failed: ${res.status}`);
                 }
 
                 // convert it 
@@ -240,6 +240,7 @@ function SearchResults() {
                     same logic as in Cooking, Baking */}
             {selectedRecipe && (
                 <RecipeDetailModal
+                    key={selectedRecipe.idMeal}
                     recipe={selectedRecipe}
                     onClose={() => setSelectedRecipe(null)}
                     recipeType="auto"

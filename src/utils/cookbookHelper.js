@@ -144,7 +144,7 @@ export const scaleMeasure = (measure, currentServings = 4, baseServings = 4) => 
     const restOfMeasure = trimmed.slice(rawAmount.length); // " g", " cups"
 
     // a fraction needs to be converted into a decimal number to multiply
-    let numericValue = 0;   // in there the numerical value will be stored
+    let numericValue;
     // so if the number that was stored before includes a string / it is a fraction
     if (rawAmount.includes('/')) {
         // and then it should be splitted at the point where a space is so 1 1/2 would get "1", "1/2" to get two numbers

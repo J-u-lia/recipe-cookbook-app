@@ -1,5 +1,5 @@
 // copied logic for creating recipe from MyCookbook to seperate file - easier to debug
-import { useState, useEffect } from 'react';    // useEffect is now needed for the side effect
+import { useState } from 'react';
 import { saveCustomRecipe } from '../utils/cookbookHelper';
 
 function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
@@ -14,53 +14,36 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
     };
 
     // the form that is then changed is now at the beginning the same as the empty one
-    const [customRecipeForm, setCustomRecipeForm] = useState(emptyRecipeForm);
+    const [customRecipeForm, setCustomRecipeForm] = useState(() => {
+        if (!recipeToEdit) return emptyRecipeForm;
+
+        const ingredients = [];
+        for (let i = 1; i <= 20; i++) {
+            const ingredient = recipeToEdit[`strIngredient${i}`];
+            const measure = recipeToEdit[`strMeasure${i}`];
+
+            if (ingredient && ingredient.trim() !== '') {
+                ingredients.push({
+                    ingredient,
+                    measure: measure || ''
+                });
+            }
+        }
+
+        return {
+            title: recipeToEdit.strMeal || '',
+            category: recipeToEdit.strCategory || 'Cooking',
+            area: recipeToEdit.strArea || '',
+            instructions: recipeToEdit.strInstructions || '',
+            image: recipeToEdit.strMealThumb || '',
+            ingredients: ingredients.length > 0
+                ? ingredients
+                : [{ ingredient: '', measure: '' }]
+        };
+    });
 
     const [formError, setFormError] = useState('');
     const [formSuccess, setFormSuccess] = useState('');
-
-    // if user clicks Edit then the recipeToEdit contains the strMeal, Category, ect. and through this effect that is converted back into the format the form expects title, category, area, ...
-    useEffect(() => {
-        setFormError('');
-        setFormSuccess('');
-        
-        // if we are editing an existing recipe
-        if (recipeToEdit) {
-            // Convert the stored recipe back into the format
-            // that form uses.
-            const ingredients = [];
-            // iterate thorugh the 20 possivle ingredient keys and then match the TheMealDB API to the stored schea foramt
-            for (let i = 1; i <= 20; i++) {
-                const ingredient = recipeToEdit[`strIngredient${i}`];
-                const measure = recipeToEdit[`strMeasure${i}`];
-
-                // Only add ingredients that actually contain something.
-                if (ingredient && ingredient.trim() !== '') {
-                    ingredients.push({
-                        ingredient,
-                        measure: measure || ''
-                    });
-                }
-            }
-
-            // populate the modal form state with the existing recipe details
-            setCustomRecipeForm({
-                title: recipeToEdit.strMeal || '',
-                category: recipeToEdit.strCategory || 'Cooking',
-                area: recipeToEdit.strArea || '',
-                instructions: recipeToEdit.strInstructions || '',
-                image: recipeToEdit.strMealThumb || '',
-                ingredients: ingredients.length > 0
-                    ? ingredients
-                    : [{ ingredient: '', measure: '' }]
-            });
-
-        } else {
-            // If we are creating a new recipe,
-            // start with an empty form.
-            setCustomRecipeForm(emptyRecipeForm);
-        }
-    }, [recipeToEdit, show]);
 
     const handleIngredientChange = (index, field, value) => {
         const updated = [...customRecipeForm.ingredients];

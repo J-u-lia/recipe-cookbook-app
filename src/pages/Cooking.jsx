@@ -14,8 +14,6 @@ import RecipeDetailModal from '../components/RecipeDetailModal';
 function Cooking() {
     const [recipes, setRecipes] = useState([]); // react state for current recipe data taht is initially an empty array, with function to change recipes
     const [loading, setLoading] = useState(true);   //  is application currently waiting for API (true) or not (false)
-    const [categoryFilter, setCategoryFilter] = useState('Chicken');    // currently selected categroy, with useEffect changing this variable triggers different API request
-    const [selectedRecipe, setSelectedRecipe] = useState(null); // stores recipe that user has clicked, at beginning no selected recipe
     
     // variables that extract information directly from browser's URL query strin
     // so when clicking on quicklinks on home they do route listening and then the user gets to the destination - this way the webpage can filter recipes before being even on the page
@@ -23,6 +21,9 @@ function Cooking() {
     const categoryParam = searchParams.get('category'); // search for category e.g., 'vegetarian'
     const tagParam = searchParams.get('tag');   // for tags
     const typeParam = searchParams.get('type'); // for type
+    const initialCategory = categoryParam || tagParam || typeParam || 'Chicken';
+    const [categoryFilter, setCategoryFilter] = useState(initialCategory);
+    const [selectedRecipe, setSelectedRecipe] = useState(null); // stores recipe that user has clicked, at beginning no selected recipe
     
     const [error, setError] = useState('');
     const [detailError, setDetailError] = useState('');
@@ -35,34 +36,14 @@ function Cooking() {
     // it is async because API requests take time so app won't block
     // query is the value website expects so e.g Chicken
     const fetchRecipes = async (query) => {
-        setLoading(true);   // to tell React it is going to load sth
-        setError('');
+        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${query}`);
 
-        try {
-            // first contact the external API over the URL with await because this needs time
-            const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${query}`);
-            
-            if (!response.ok) {
-                throw new Error(`API request failed: ${response.status}`);
-            }
-            
-            // the data from the API is a json (string) we need to convert it into JavaScript object 
-            const data = await response.json();
-            // takes recipes from API response and puts them into React state - updates state
-            // if data.meals doesn't exist or is fals use empty array
-            setRecipes(data.meals || []);
-        } catch (error) {
-            // if sth goes wrong inside the try an error will be printet in console
-            console.error('Error fetching recipes:', error);
-            setRecipes([]); // reset recipes to empty array
-            setError(
-                'We could not load recipes right now. Please check your connection and try again.'
-            );
-        } finally {
-            // runs in both try and catch cases
-            // tells that the API request is finished
-            setLoading(false);
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
         }
+
+        const data = await response.json();
+        return data.meals || [];
     };
 
     // Fetch detailed recipe info for the Modal view
@@ -101,25 +82,40 @@ function Cooking() {
         }
     };
 
-    // run the fetchRecipes(categoryFilter) when the component loads and always when the categoryFilter changes
-    // e.g user first selects filter on Chicken and then it is fetchRecipes("Chicken") but then he changes to Pasta then the categoryFilter changes from Chicken to Pasta so the fetchRecipes() also changes from chicken to Patsa because it is dependend on categoryFilter
+    // Load recipes for the selected category.
     useEffect(() => {
-        // checks for first existing parameter in the URL
-        const query = categoryParam || tagParam || typeParam;
-        if (query) {
-            // if it finds one it updates the state to the thing found
-            setCategoryFilter(query);
-            fetchRecipes(query);
-        } else {
-            fetchRecipes(categoryFilter);
-        }
-    }, [categoryParam, tagParam, typeParam]);   // this tells react when to re-run useEffect block because react monitores the values of tese 3 things and everytime the compoonent rerenders the react compares these three values to what they were before rendering and if any of those changed then the function has to be runned again
+        let isCurrentRequest = true;
+
+        fetchRecipes(categoryFilter)
+            .then((meals) => {
+                if (isCurrentRequest) setRecipes(meals);
+            })
+            .catch((error) => {
+                if (!isCurrentRequest) return;
+
+                console.error('Error fetching recipes:', error);
+                setRecipes([]);
+                setError(
+                    'We could not load recipes right now. Please check your connection and try again.'
+                );
+            })
+            .finally(() => {
+                if (isCurrentRequest) setLoading(false);
+            });
+
+        return () => {
+            isCurrentRequest = false;
+        };
+    }, [categoryFilter]);
 
     // this gets a category (e.g. Beef) and updates the state setCategoryFilter("Beef") and because the categoryFilter changed the useEffect runs
     const handleCategoryChange = (cat) => {
+        if (cat === categoryFilter) return;
+
+        setError('');
+        setLoading(true);
         setCategoryFilter(cat);
         setSearchParams({});
-        fetchRecipes(cat);
     };
 
     // beginn of JSX so React will diplay
@@ -242,6 +238,7 @@ function Cooking() {
             {/* RECIPE DETAIL MODAL */}
             {selectedRecipe && (
                 <RecipeDetailModal
+                    key={selectedRecipe.idMeal}
                     recipe={selectedRecipe}
                     onClose={() => setSelectedRecipe(null)}
                     recipeType="cooking"

@@ -6,7 +6,6 @@
   Routes - container for different routes to go to 
   Route - defines one URL and what should appear when this URL is pressed
   Link - used for navigation, creates sth that user can click and sth will happen when clicked */}
-import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom';
 import { ChefHat } from 'lucide-react';
 {/* Page imports */}
@@ -18,11 +17,6 @@ import MyCookbook from './pages/MyCookbook';
 {/* a component called App */}
 {/* contains applications's overall layout */}
 function App() {
-  
-  // Handler when user clicks "View" on a card inside MyCookbook
-  const handleSelectRecipeFromCookbook = (idMeal) => {
-    setSelectedRecipeId(idMeal);
-  };
   {/* App function is returning UI as JSX to React */}
   return (
     <BrowserRouter> {/* wraps everything in React BrowserRouter System to keep track which component should be displayed */}
@@ -85,7 +79,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/cooking" element={<Cooking />} />
           <Route path="/baking" element={<Baking />} />
-          <Route path="/my-cookbook" element={<MyCookbook onSelectRecipe={handleSelectRecipeFromCookbook} />} />
+          <Route path="/my-cookbook" element={<MyCookbook />} />
         </Routes>
       </div>
     </BrowserRouter>

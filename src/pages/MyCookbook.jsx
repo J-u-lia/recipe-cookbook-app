@@ -1,16 +1,29 @@
 // file for the MyCookbook screen - loads saved recipes, displays them, can be removed, ect.
 
 // IMPORTS
-import { useState, useEffect } from 'react';    // react hooks to remember information that can change and that react can perform sth as a side effect
+import { useState } from 'react';
 import { Bookmark, Heart, Trash2, Eye, PlusCircle } from 'lucide-react';   // icons
 import AddRecipeModal from '../components/AddRecipeModal';
 import './MyCookbook.css';
 import RecipeDetailModal from '../components/RecipeDetailModal';
 
+function readCookbook() {
+    const stored = localStorage.getItem('my_cookbook');
+    if (!stored) return [];
+
+    try {
+        const recipes = JSON.parse(stored);
+        return Array.isArray(recipes) ? recipes : [];
+    } catch (error) {
+        console.error('Error parsing cookbook from localStorage:', error);
+        return [];
+    }
+}
+
 // React Component
 function MyCookbook() {
     // variable to store saved Recipes data and call them - at beginning no recipe saved
-    const [savedRecipes, setSavedRecipes] = useState([]);
+    const [savedRecipes, setSavedRecipes] = useState(readCookbook);
     // storing which cookbook filter is currently selected
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [cookbookSection, setCookbookSection] = useState('liked');
@@ -20,28 +33,7 @@ function MyCookbook() {
     const [detailError, setDetailError] = useState('');
     const [loadingDetailsId, setLoadingDetailsId] = useState(null);
 
-    // Load saved cookbook from localStorage and put it into react state
-    const loadCookbook = () => {
-        const stored = localStorage.getItem('my_cookbook'); // checks if sth is stored under key my_cookbook
-        if (stored) {
-            // if there is then convert the stored JSON into JS array
-            try {
-                setSavedRecipes(JSON.parse(stored));
-            } catch (err) {
-                // if it fails then print error message in console
-                console.error('Error parsing cookbook from localStorage:', err);
-                setSavedRecipes([]);
-            }
-        } else {
-            // if there is nothing stored then cookbook is empty array
-            setSavedRecipes([]);
-        }
-    };
-
-    // when someone opens the cookbook the component must be displayed
-    useEffect(() => {
-        loadCookbook();
-    }, []);
+    const loadCookbook = () => setSavedRecipes(readCookbook());
 
     // Remove recipe from cookbook
     const removeRecipe = (idMeal) => {
@@ -379,6 +371,7 @@ function MyCookbook() {
                                                 if recipe from baking screen then portion scaler and unit converter shown*/}
             {selectedRecipe && (
                 <RecipeDetailModal
+                    key={selectedRecipe.idMeal}
                     recipe={selectedRecipe}
                     onClose={() => setSelectedRecipe(null)}
                     recipeType="auto"
@@ -393,6 +386,7 @@ function MyCookbook() {
 
             {/* ADD CUSTOM RECIPE MODAL */}
             <AddRecipeModal
+                key={showAddModal ? recipeToEdit?.idMeal ?? 'new-recipe' : 'closed'}
                 show={showAddModal}
                 onClose={() => {
                     setShowAddModal(false);

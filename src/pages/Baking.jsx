@@ -11,13 +11,13 @@ function Baking() {
     // create the states again
     const [recipes, setRecipes] = useState([]); // make an array for recipes
     const [loading, setLoading] = useState(true);   // variable that stores if expecting an API request or not
-    const [categoryFilter, setCategoryFilter] = useState('Dessert');    //set the currently selected category to Dessert, if user then clicks Breakfast then it is breakfast, if this changes a different API request is casued
-    const [selectedRecipe, setSelectedRecipe] = useState(null); // remembers which recipe the user has opend, at the beginning no recipe opend
-    
     const [searchParams] = useSearchParams();
     const categoryParam = searchParams.get('category');
     const tagParam = searchParams.get('tag');
     const typeParam = searchParams.get('type');
+    const initialCategory = categoryParam || tagParam || typeParam || 'Dessert';
+    const [categoryFilter, setCategoryFilter] = useState(initialCategory);
+    const [selectedRecipe, setSelectedRecipe] = useState(null); // remembers which recipe the user has opend, at the beginning no recipe opend
     
     const [error, setError] = useState('');
     const [detailError, setDetailError] = useState('');
@@ -25,34 +25,16 @@ function Baking() {
 
     const categories = ['Dessert', 'Breakfast', 'Side'];    // the different categories to choose from from the TheMealDB
 
-    // asynchronous function to get the data the TheMealDB API provides for the selected category
+    // Fetch category data without coupling the request to React state updates.
     const fetchBakingRecipes = async (category) => {
-        setError('');
-        // it is loading to this is true
-        setLoading(true);
-        try {
-            // get the data from the URL with the query parameter at the end to automatically put the right category in the link
-            const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`);
-            
-            if (!response.ok) {
-                throw new Error(`API request failed: ${response.status}`);
-            }
+        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`);
 
-            // convert the data provided from JSOn into JS object
-            const data = await response.json();
-            // use the data.meals if exist if not use empty array
-            setRecipes(data.meals || []);   // the recipes are stored in react state
-        } catch (error) {
-            // if fetching goes wrong diplay error in console
-            console.error('Error fetching baking recipes:', error);
-            setRecipes([]);
-            setError(
-                'We could not load baking recipes right now. Please check your connection and try again.'
-            );
-        } finally {
-            // eitherway set the loading to false again, either finished loading or didn't even start
-            setLoading(false);
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
         }
+
+        const data = await response.json();
+        return data.meals || [];
     };
 
     // now the recipe details has to be fetched for each meal (everyone got an ID)
@@ -88,16 +70,29 @@ function Baking() {
         }
     };
 
-    // everytime the categoryFilter changes run this code - means everytime the user clicks on a new category the data from this categroy has to be fetched
     useEffect(() => {
-        const query = categoryParam || tagParam || typeParam;
-        if (query) {
-            setCategoryFilter(query);
-        }
-    }, [categoryParam, tagParam, typeParam]);
+        let isCurrentRequest = true;
 
-    useEffect(() => {   // fetch the recipes when category filter state canges
-        fetchBakingRecipes(categoryFilter);
+        fetchBakingRecipes(categoryFilter)
+            .then((meals) => {
+                if (isCurrentRequest) setRecipes(meals);
+            })
+            .catch((error) => {
+                if (!isCurrentRequest) return;
+
+                console.error('Error fetching baking recipes:', error);
+                setRecipes([]);
+                setError(
+                    'We could not load baking recipes right now. Please check your connection and try again.'
+                );
+            })
+            .finally(() => {
+                if (isCurrentRequest) setLoading(false);
+            });
+
+        return () => {
+            isCurrentRequest = false;
+        };
     }, [categoryFilter]);
 
 
@@ -125,7 +120,13 @@ function Baking() {
                 {categories.map((cat) => (
                     <button
                         key={cat}
-                        onClick={() => setCategoryFilter(cat)}
+                        onClick={() => {
+                            if (cat === categoryFilter) return;
+
+                            setError('');
+                            setLoading(true);
+                            setCategoryFilter(cat);
+                        }}
                         className={`btn rounded-pill px-4 py-2 fw-semibold border-0 ${
                             categoryFilter === cat ? 'baking-category shadow-sm' : 'btn-light text-dark'
                         }`}
@@ -217,6 +218,7 @@ function Baking() {
                 below that the instructions how to make that meal are written */}
             {selectedRecipe && (
                 <RecipeDetailModal
+                    key={selectedRecipe.idMeal}
                     recipe={selectedRecipe}
                     onClose={() => setSelectedRecipe(null)}
                     recipeType="baking"
