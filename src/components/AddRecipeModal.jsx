@@ -1,6 +1,7 @@
 // copied logic for creating recipe from MyCookbook to seperate file - easier to debug
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { saveCustomRecipe } from '../utils/cookbookHelper';
+import { useModalAccessibility } from '../hooks/useModalAccessibility';
 
 const MAX_IMAGE_SIZE_BYTES = 1024 * 1024;
 
@@ -46,6 +47,8 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
 
     const [formError, setFormError] = useState('');
     const [formSuccess, setFormSuccess] = useState('');
+    const modalRef = useRef(null);
+    useModalAccessibility(modalRef, show, onClose);
 
     const handleIngredientChange = (index, field, value) => {
         const updated = [...customRecipeForm.ingredients];
@@ -174,20 +177,27 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
 
     return (
         <div
+            ref={modalRef}
             className="modal show d-block"
+            tabIndex="-1"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="recipe-editor-title"
             style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
         >
             <div className="modal-dialog modal-lg modal-dialog-centered">
                 <div className="modal-content rounded-4 border-0 shadow">
 
                     <div className="modal-header border-0 bg-light p-4 justify-content-between">
-                        <h4 className="fw-bold mb-0">
+                        <h4 id="recipe-editor-title" className="fw-bold mb-0">
                             {recipeToEdit ? 'Edit Recipe' : 'Create Custom Recipe'}
                         </h4>
 
                         <button
+                            type="button"
                             className="btn-close"
                             onClick={onClose}
+                            aria-label="Close"
                         ></button>
                     </div>
 
@@ -215,11 +225,12 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
 
                             {/* Recipe Title */}
                             <div className="mb-3">
-                                <label className="form-label fw-bold">
+                                <label htmlFor="recipe-title" className="form-label fw-bold">
                                     Recipe Title
                                 </label>
 
                                 <input
+                                    id="recipe-title"
                                     type="text"
                                     className="form-control rounded-3"
                                     required
@@ -238,11 +249,12 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
                             <div className="row g-3 mb-3">
 
                                 <div className="col-md-4">
-                                    <label className="form-label fw-bold">
+                                    <label htmlFor="recipe-category" className="form-label fw-bold">
                                         Category
                                     </label>
 
                                     <select
+                                        id="recipe-category"
                                         className="form-select rounded-3"
                                         value={customRecipeForm.category}
                                         onChange={(e) =>
@@ -259,11 +271,12 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
                                 </div>
 
                                 <div className="col-md-4">
-                                    <label className="form-label fw-bold">
+                                    <label htmlFor="recipe-origin" className="form-label fw-bold">
                                         Origin
                                     </label>
 
                                     <input
+                                        id="recipe-origin"
                                         type="text"
                                         className="form-control rounded-3"
                                         value={customRecipeForm.area}
@@ -278,11 +291,12 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
                                 </div>
 
                                 <div className="col-md-4">
-                                    <label className="form-label fw-bold">
+                                    <label htmlFor="recipe-image-url" className="form-label fw-bold">
                                         Recipe Image
                                     </label>
 
                                     <input
+                                        id="recipe-image-url"
                                         type="url"
                                         className="form-control rounded-3 mb-2"
                                         value={customRecipeForm.image}
@@ -295,7 +309,11 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
                                         placeholder="Paste image URL"
                                     />
 
+                                    <label htmlFor="recipe-image-upload" className="form-label">
+                                        Or upload an image
+                                    </label>
                                     <input
+                                        id="recipe-image-upload"
                                         type="file"
                                         accept="image/*"
                                         className="form-control rounded-3"
@@ -310,9 +328,9 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
 
                             {/* Ingredients */}
                             <div className="mb-3">
-                                <label className="form-label fw-bold">
+                                <span className="form-label fw-bold d-block">
                                     Ingredients
-                                </label>
+                                </span>
 
                                 {customRecipeForm.ingredients.map((ing, idx) => (
                                     <div
@@ -320,9 +338,11 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
                                         className="d-flex gap-2 mb-2"
                                     >
                                         <input
+                                            id={`ingredient-amount-${idx}`}
                                             type="text"
                                             className="form-control rounded-3"
                                             placeholder="Amount"
+                                            aria-label={`Amount for ingredient ${idx + 1}`}
                                             value={ing.measure}
                                             onChange={(e) =>
                                                 handleIngredientChange(
@@ -334,9 +354,11 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
                                         />
 
                                         <input
+                                            id={`ingredient-name-${idx}`}
                                             type="text"
                                             className="form-control rounded-3"
                                             placeholder="Ingredient"
+                                            aria-label={`Ingredient name ${idx + 1}`}
                                             value={ing.ingredient}
                                             onChange={(e) =>
                                                 handleIngredientChange(
@@ -360,11 +382,12 @@ function AddRecipeModal({ show, onClose, onSaved, recipeToEdit }) {
 
                             {/* Instructions */}
                             <div className="mb-3">
-                                <label className="form-label fw-bold">
+                                <label htmlFor="recipe-instructions" className="form-label fw-bold">
                                     Instructions
                                 </label>
 
                                 <textarea
+                                    id="recipe-instructions"
                                     className="form-control rounded-3"
                                     rows="4"
                                     required

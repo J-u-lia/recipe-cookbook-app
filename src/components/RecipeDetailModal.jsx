@@ -1,11 +1,12 @@
 // function that includes all the logic for the different recipe detail modals
 
 // import the functions used
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 // improt icons
-import { Heart, Minus, Plus, PlusCircle, Trash2, Users, CheckSquare, Square } from 'lucide-react';
+import { Heart, Minus, Plus, PlusCircle, Trash2, Users } from 'lucide-react';
 // improt helper functions
 import { isRecipeSaved, scaleMeasure, toggleSaveRecipe } from '../utils/cookbookHelper';
+import { useModalAccessibility } from '../hooks/useModalAccessibility';
 
 // create the fucntion that displays the details of the recipe in the popup window
 // managses the serving size scaling, ingredient checklist
@@ -25,6 +26,8 @@ function RecipeDetailModal({
     const [servings, setServings] = useState(4);
     const [checkedIngredients, setCheckedIngredients] = useState({});
     const [, setSaveVersion] = useState(0);
+    const modalRef = useRef(null);
+    useModalAccessibility(modalRef, Boolean(recipe), onClose);
 
     // if there is no recipe selected then return
     if (!recipe) return null;
@@ -86,10 +89,12 @@ function RecipeDetailModal({
     return (
         // creates the modal with onClick which detects the click on the overlay
         <div
+            ref={modalRef}
             className="modal show d-block"
             tabIndex="-1"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="recipe-detail-title"
             style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
             onClick={(event) => {
                 if (event.target === event.currentTarget) {
@@ -102,7 +107,7 @@ function RecipeDetailModal({
 
                     {/* Modal header with name and closing button */}
                     <div className="modal-header border-0 bg-light p-4">
-                        <h3 className="modal-title fw-bold">
+                        <h3 id="recipe-detail-title" className="modal-title fw-bold">
                             {recipe.strMeal}
                         </h3>
 
@@ -272,34 +277,26 @@ function RecipeDetailModal({
                                         return (
                                             <li
                                                 key={`${item.ingredient}-${index}`}
-                                                onClick={() => toggleIngredientCheck(index)}
                                                 className="list-group-item d-flex align-items-center gap-3 border-0 py-2 px-0 bg-transparent"
-                                                style={{ cursor: 'pointer' }}
                                             >
-                                                {/* CHECKBOX ICON */}
-                                                {checkedIngredients[index] ? (
-                                                    <CheckSquare
-                                                        size={20}
-                                                        className="text-success flex-shrink-0"
-                                                    />
-                                                ) : (
-                                                    <Square
-                                                        size={20}
-                                                        className="text-muted flex-shrink-0"
-                                                    />
-                                                )}
-
-                                                {/* INGREDIENT */}
-                                                <span
-                                                    className={
+                                                <input
+                                                    id={`ingredient-${recipe.idMeal}-${index}`}
+                                                    type="checkbox"
+                                                    className="form-check-input flex-shrink-0 m-0"
+                                                    checked={Boolean(checkedIngredients[index])}
+                                                    onChange={() => toggleIngredientCheck(index)}
+                                                />
+                                                <label
+                                                    htmlFor={`ingredient-${recipe.idMeal}-${index}`}
+                                                    className={`mb-0 ${
                                                         checkedIngredients[index]
                                                             ? 'text-decoration-line-through text-muted'
                                                             : ''
-                                                    }
+                                                    }`}
                                                 >
                                                     <strong>{displayMeasure}</strong>{' '}
                                                     {item.ingredient}
-                                                </span>
+                                                </label>
                                             </li>
                                         );
                                     })}

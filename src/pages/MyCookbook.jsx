@@ -342,8 +342,9 @@ function MyCookbook() {
                                             onClick={() => removeRecipe(meal.idMeal)}
                                             className="btn btn-outline-danger btn-sm rounded-3 px-2"
                                             title="Remove from Cookbook"
+                                            aria-label={`Remove ${meal.strMeal} from cookbook`}
                                         >
-                                            <Trash2 size={16} />
+                                            <Trash2 size={16} aria-hidden="true" />
                                         </button>
                                     </div>
                                 </div>

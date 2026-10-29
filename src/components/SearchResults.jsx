@@ -179,9 +179,13 @@ function SearchResults() {
             <form onSubmit={handleSearchSubmit}>
                 <div className="input-group input-group-lg shadow-sm">
                     <span className="input-group-text bg-white border-0 text-muted ps-3">
-                        <Search size={22} />
+                        <Search size={22} aria-hidden="true" />
                     </span>
+                    <label className="visually-hidden" htmlFor="recipe-search">
+                        Search recipes
+                    </label>
                     <input
+                        id="recipe-search"
                         type="text"
                         className="form-control border-0 fs-6 ps-2"
                         placeholder="Search by dish, ingredient, category, origin or tag..."
