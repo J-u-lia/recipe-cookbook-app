@@ -19,7 +19,7 @@ import MyCookbook from './pages/MyCookbook';
 function App() {
   {/* App function is returning UI as JSX to React */}
   return (
-    <BrowserRouter> {/* wraps everything in React BrowserRouter System to keep track which component should be displayed */}
+    <BrowserRouter basename={import.meta.env.BASE_URL}> {/* wraps everything in React BrowserRouter System to keep track which component should be displayed */}
       {/* Navigation Bar with Bootstrap classes: a navigation bar, should expland, dark background, navbar suitable for dark background, margin-bottom level 4*/}
       <nav className="navbar navbar-expand-lg recipy-navbar mb-4">
         <div className="container">

@@ -65,9 +65,14 @@ npm run preview # Preview the production build locally
 
 ## Deployment
 
-GitHub Pages deployment has not been done yet. After configuring and publishing the site, working public URL will be added here. The expected project-site URL is:
+The app is configured to deploy to GitHub Pages with GitHub Actions. To enable deployment:
 
-`asdf`
+1. Push the project to the `main` branch on GitHub.
+2. In the repository, open **Settings → Pages**.
+3. Under **Build and deployment**, choose **GitHub Actions** as the source.
+4. Open the **Actions** tab and wait for the **Deploy to GitHub Pages** workflow to complete.
+
+The public URL should be <https://j-u-lia.github.io/recipe-cookbook-app/>. After deployment, open the URL and check navigation, recipe search, and refreshing a page such as `/cooking`.
 
 ## Project structure
 
