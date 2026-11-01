@@ -22,6 +22,7 @@ function Baking() {
     const [error, setError] = useState('');
     const [detailError, setDetailError] = useState('');
     const [loadingDetailsId, setLoadingDetailsId] = useState(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     const categories = ['Dessert', 'Breakfast', 'Side'];    // the different categories to choose from from the TheMealDB
 
@@ -93,7 +94,7 @@ function Baking() {
         return () => {
             isCurrentRequest = false;
         };
-    }, [categoryFilter]);
+    }, [categoryFilter, retryCount]);
 
 
     // UI that this component should display
@@ -157,6 +158,19 @@ function Baking() {
             ) : error ? (
                 <div className="alert alert-danger text-center" role="alert">
                     {error}
+                    <div className="mt-2">
+                        <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => {
+                                setError('');
+                                setLoading(true);
+                                setRetryCount((count) => count + 1);
+                            }}
+                        >
+                            Try again
+                        </button>
+                    </div>
                 </div>
             ) : recipes.length === 0 ? (
                 <div className="text-center py-5">

@@ -10,8 +10,8 @@ function RecipeOfTheDay() {
     const [recipeOfDay, setRecipeOfDay] = useState(null);   // Stores the recipe we get from TheMealDB
     const [loading, setLoading] = useState(true);       // Controls the loading message/spinner
     const [showModal, setShowModal] = useState(false);    // Controls whether the full recipe modal is open
-    
     const [error, setError] = useState('');
+    const [retryCount, setRetryCount] = useState(0);
 
     // Get the recipe when the component first loads
     useEffect(() => {
@@ -42,14 +42,16 @@ function RecipeOfTheDay() {
                 const data = await response.json();     // Convert the response into JavaScript data
 
                 // response should contain meals property and a recipe 
-                if (data.meals && data.meals[0]) {
-                    const meal = data.meals[0]; // takes first recipe and store it in meal
-
-                    setRecipeOfDay(meal);   // Store the recipe in React state
-
-                    localStorage.setItem('recipe_of_the_day',JSON.stringify(meal)); // Save the recipe in local storage so it can use the same recipe today and make a string
-                    localStorage.setItem('recipe_of_the_day_date',today);   // Save today's date
+                if (!data.meals?.[0]) {
+                    throw new Error('The API did not return a recipe.');
                 }
+
+                const meal = data.meals[0]; // takes first recipe and store it in meal
+
+                setRecipeOfDay(meal);   // Store the recipe in React state
+
+                localStorage.setItem('recipe_of_the_day',JSON.stringify(meal)); // Save the recipe in local storage so it can use the same recipe today and make a string
+                localStorage.setItem('recipe_of_the_day_date',today);   // Save today's date
             } catch (error) {
                 // Show an error in the browser console if the API fails
                 console.error('Error fetching recipe of the day:', error);
@@ -64,7 +66,7 @@ function RecipeOfTheDay() {
         };
 
         fetchRecipeOfDay(); // call the function
-    }, []);
+    }, [retryCount]);
 
     return (
         // with <> function can return multiple things without creating extra <div>    
@@ -101,8 +103,21 @@ function RecipeOfTheDay() {
                     )}
 
                     {error && (
-                        <div className="alert alert-warning" role="alert">
+                        <div className="alert alert-warning text-center" role="alert">
                             {error}
+                            <div className="mt-2">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-warning btn-sm"
+                                    onClick={() => {
+                                        setError('');
+                                        setLoading(true);
+                                        setRetryCount((count) => count + 1);
+                                    }}
+                                >
+                                    Try again
+                                </button>
+                            </div>
                         </div>
                     )}
 
@@ -148,12 +163,6 @@ function RecipeOfTheDay() {
                         </div>
                     )}
 
-                    {/* Error / no recipe state */}
-                    {!loading && !recipeOfDay && (
-                        <div className="alert alert-danger text-center">
-                            Sorry, we couldn't load today's recipe.
-                        </div>
-                    )}
                 </div>
             </section>
 

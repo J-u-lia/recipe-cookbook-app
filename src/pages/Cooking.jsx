@@ -28,6 +28,7 @@ function Cooking() {
     const [error, setError] = useState('');
     const [detailError, setDetailError] = useState('');
     const [loadingDetailsId, setLoadingDetailsId] = useState(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     // Categories you can select (available from TheMealDB) for cooking dishes
     const categories = ['Chicken', 'Beef', 'Pasta', 'Seafood', 'Vegetarian', 'Side'];
@@ -106,7 +107,7 @@ function Cooking() {
         return () => {
             isCurrentRequest = false;
         };
-    }, [categoryFilter]);
+    }, [categoryFilter, retryCount]);
 
     // this gets a category (e.g. Beef) and updates the state setCategoryFilter("Beef") and because the categoryFilter changed the useEffect runs
     const handleCategoryChange = (cat) => {
@@ -183,6 +184,19 @@ function Cooking() {
             ) : error ? (
                 <div className="alert alert-danger text-center" role="alert">
                     {error}
+                    <div className="mt-2">
+                        <button
+                            type="button"
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => {
+                                setError('');
+                                setLoading(true);
+                                setRetryCount((count) => count + 1);
+                            }}
+                        >
+                            Try again
+                        </button>
+                    </div>
                 </div>
             ) : recipes.length === 0 ? (
                 <div className="text-center py-5">

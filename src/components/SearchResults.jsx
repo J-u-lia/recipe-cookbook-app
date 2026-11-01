@@ -21,9 +21,11 @@ function SearchResults() {
     const handleSearchSubmit = async (e) => {
         e.preventDefault(); // don't refresh page
         const term = searchTerm.trim().toLowerCase();   // gets the search term but converts it to lowercase, no spaces
-        if (!term) return;  // if nothing typed then stop function
-
-        if (!searchTerm.trim()) {
+        if (!term) {
+            setRecipes([]);
+            setSearched(false);
+            setDetailError('');
+            setSelectedRecipe(null);
             setError('Please enter a recipe or ingredient to search for.');
             return;
         }
