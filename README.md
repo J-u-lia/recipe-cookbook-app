@@ -33,6 +33,10 @@ Recipe data is requested from TheMealDB's public REST API using `fetch` and `asy
 - **Oven & Bakery:** browse and filter baking recipes
 - **My Cookbook:** manage favorite recipes and custom recipes
 
+## Use the app
+
+Open [Recipy on GitHub Pages](https://j-u-lia.github.io/recipe-cookbook-app/) in a web browser. No installation is needed. Cookbook data is saved in that browser on that device and does not sync to other devices or browsers.
+
 ## Run locally
 
 ### Prerequisites
@@ -72,7 +76,7 @@ The app is configured to deploy to GitHub Pages with GitHub Actions. To enable d
 3. Under **Build and deployment**, choose **GitHub Actions** as the source.
 4. Open the **Actions** tab and wait for the **Deploy to GitHub Pages** workflow to complete.
 
-The public URL should be <https://j-u-lia.github.io/recipe-cookbook-app/>. After deployment, open the URL and check navigation, recipe search, and refreshing a page such as `/cooking`.
+The public URL is <https://j-u-lia.github.io/recipe-cookbook-app/>. After deployment, open the URL and check navigation, recipe search, and refreshing a page such as `/cooking`.
 
 ## Project structure
 
